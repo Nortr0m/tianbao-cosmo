@@ -1,0 +1,76 @@
+# Logs
+*.log
+*.err
+
+# TRAE
+.trae/
+
+# Uploads
+.uploads/
+
+# Large data directories
+资料/
+卡片背景/
+卡片背景资料/
+宇宙/
+数据验证/
+自媒体/
+保险文档/
+参考资料/
+product-cards/
+
+# Frontend build (handled separately)
+frontend/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Dependencies
+node_modules/
+target/
+dist/
+
+# Large archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Media and documents
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.svg
+*.ico
+*.bmp
+
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+
+*.mp4
+*.mp3
+*.avi
+*.mov
+*.wmv
+
+# Data files
+*.sql
+*.csv
+*.json
+
+# Other
+*.exe
+*.dll
+*.class

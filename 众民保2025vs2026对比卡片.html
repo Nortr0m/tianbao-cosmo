@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>众民保百万医疗险 2025 vs 2026 责任对比</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-2025: #f0f7ff;
+  --bg-2026: #fff8f0;
+  --accent-2025: #1a56db;
+  --accent-2026: #ea580c;
+  --accent-up: #16a34a;
+  --accent-new: #7c3aed;
+  --text-dark: #1a1a2e;
+  --text-mid: #4a5568;
+  --text-light: #718096;
+  --border: #e2e8f0;
+  --gold: #f59e0b;
+  --border-2025: #bfdbfe;
+  --border-2026: #fed7aa;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  min-height: 100vh;
+  padding: 40px 20px;
+  color: var(--text-dark);
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.page-header .tag-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.badge {
+  padding: 6px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.badge-2025 { background: var(--accent-2025); color: white; }
+.badge-2026 { background: var(--accent-2026); color: white; }
+.badge-2024 { background: #64748b; color: white; }
+
+h1 {
+  font-size: clamp(28px, 5vw, 46px);
+  font-weight: 900;
+  background: linear-gradient(135deg, #f0f7ff, #93c5fd, #fde68a, #fdba74);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+.subtitle {
+  color: #94a3b8;
+  font-size: 16px;
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+
+/* comparison grid */
+.comparison-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 220px 1fr 1fr;
+  gap: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.4), 0 0 60px rgba(99, 102, 241, 0.1);
+}
+
+/* headers */
+.header-cell {
+  padding: 28px 20px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+.header-2024 { background: #475569; color: white; }
+.header-2025 { background: var(--accent-2025); color: white; }
+.header-2026 { background: var(--accent-2026); color: white; }
+.header-label {
+  background: #1e293b;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 0;
+  text-align: center;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.header-2024 + .header-2025 + .header-2026 { display: contents; }
+
+/* labels column */
+.label-cell {
+  background: #1e293b;
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 16px 20px;
+  border-bottom: 1px solid #334155;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.label-cell:last-child { border-bottom: none; }
+.label-icon {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #64748b;
+  flex-shrink: 0;
+}
+
+/* value cells */
+.value-cell {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  line-height: 1.6;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.value-cell:last-child { border-bottom: none; }
+.val-2024 { background: #f8fafc; }
+.val-2025 { background: var(--bg-2025); }
+.val-2026 { background: var(--bg-2026); }
+
+/* tags */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tag-up { background: #dcfce7; color: #15803d; }
+.tag-new { background: #ede9fe; color: #6d28d9; }
+.tag-fix { background: #fef9c3; color: #854d0e; }
+.tag-down { background: #fee2e2; color: #b91c1c; }
+.tag-keep { background: #f1f5f9; color: #475569; }
+
+/* section dividers */
+.section-label {
+  grid-column: 1 / -1;
+  background: #0f172a;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  padding: 10px 24px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #1e293b;
+}
+
+/* highlight box */
+.highlight-box {
+  max-width: 1100px;
+  margin: 40px auto 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.card {
+  border-radius: 20px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.08;
+  pointer-events: none;
+}
+.card-2025 {
+  background: linear-gradient(145deg, #dbeafe, #eff6ff);
+  border: 2px solid var(--border-2025);
+}
+.card-2025::before { background: var(--accent-2025); }
+.card-2026 {
+  background: linear-gradient(145deg, #ffedd5, #fff7ed);
+  border: 2px solid var(--border-2026);
+}
+.card-2026::before { background: var(--accent-2026); }
+
+.card h3 {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-2025 h3 { color: var(--accent-2025); }
+.card-2026 h3 { color: var(--accent-2026); }
+
+.highlight-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+.highlight-item:last-child { margin-bottom: 0; }
+.hl-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+  color: white;
+}
+.hl-2025 .hl-num { background: var(--accent-2025); }
+.hl-2026 .hl-num { background: var(--accent-2026); }
+.hl-text { font-size: 13.5px; line-height: 1.6; color: var(--text-dark); }
+.hl-title { font-weight: 700; margin-bottom: 2px; display: block; }
+
+/* footer note */
+.footer-note {
+  max-width: 1100px;
+  margin: 32px auto 0;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 20px 28px;
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.footer-note strong { color: #cbd5e1; }
+
+/* price table */
+.price-section {
+  max-width: 1100px;
+  margin: 40px auto 0;
+  background: rgba(255,255,255,0.97);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.3);
+}
+.price-section h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 20px;
+  text-align: center;
+}
+.price-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.price-table th {
+  background: #1e293b;
+  color: white;
+  padding: 10px 16px;
+  font-weight: 600;
+  text-align: center;
+}
+.price-table th:first-child { border-radius: 8px 0 0 0; }
+.price-table th:last-child { border-radius: 0 8px 0 0; }
+.price-table td {
+  padding: 9px 16px;
+  text-align: center;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--text-mid);
+}
+.price-table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+.price-table tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+.price-table tr:nth-child(even) { background: #f8fafc; }
+.price-table .trend-up { color: #16a34a; font-weight: 600; }
+.price-table .trend-new { color: #7c3aed; font-weight: 600; }
+
+@media (max-width: 768px) {
+  .comparison-grid { grid-template-columns: 1fr; font-size: 12px; }
+  .highlight-box { grid-template-columns: 1fr; }
+  .header-cell { padding: 16px; }
+  .price-section { padding: 20px; overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="tag-row">
+    <span class="badge badge-2024">基础版</span>
+    <span class="badge badge-2025">2025版</span>
+    <span class="badge badge-2026">2026版</span>
+  </div>
+  <h1>众民保·百万医疗险 责任对比</h1>
+  <div class="subtitle">众安在线财产保险股份有限公司</div>
+</div>
+
+<!-- Main comparison table -->
+<div class="comparison-grid">
+  <!-- Column Headers -->
+  <div class="header-cell header-2024">基础版</div>
+  <div class="header-cell header-2025">2025版</div>
+  <div class="header-cell header-2026">2026版</div>
+
+  <!-- Section: 基础信息 -->
+  <div class="section-label">一、基础信息</div>
+  <div class="label-cell"><span class="label-icon"></span>投保年龄</div>
+  <div class="value-cell val-2024">30天 - 80周岁</div>
+  <div class="value-cell val-2025">30天 - 80周岁</div>
+  <div class="value-cell val-2026">30天 - 80周岁</div>
+
+  <div class="label-cell"><span class="label-icon"></span>保障期间</div>
+  <div class="value-cell val-2024">1年</div>
+  <div class="value-cell val-2025">1年</div>
+  <div class="value-cell val-2026">1年</div>
+
+  <div class="label-cell"><span class="label-icon"></span>等待期</div>
+  <div class="value-cell val-2024">30天</div>
+  <div class="value-cell val-2025">30天</div>
+  <div class="value-cell val-2026">30天</div>
+
+  <div class="label-cell"><span class="label-icon"></span>健康告知</div>
+  <div class="value-cell val-2024">免健康告知</div>
+  <div class="value-cell val-2025">免健康告知</div>
+  <div class="value-cell val-2026">免健康告知</div>
+
+  <div class="label-cell"><span class="label-icon"></span>职业要求</div>
+  <div class="value-cell val-2024">不限职业</div>
+  <div class="value-cell val-2025">不限职业</div>
+  <div class="value-cell val-2026">不限职业</div>
+
+  <!-- Section: 一般医疗 -->
+  <div class="section-label">二、一般医疗保险金</div>
+  <div class="label-cell"><span class="label-icon"></span>保额（经典版）</div>
+  <div class="value-cell val-2024">200万</div>
+  <div class="value-cell val-2025">200万</div>
+  <div class="value-cell val-2026">200万</div>
+
+  <div class="label-cell"><span class="label-icon"></span>保额（臻选版）</div>
+  <div class="value-cell val-2024">—</div>
+  <div class="value-cell val-2025">300万</div>
+  <div class="value-cell val-2026">300万</div>
+
+  <div class="label-cell"><span class="label-icon"></span>免赔额（经典版）</div>
+  <div class="value-cell val-2024">社保内1万 + 社保外1万 = 2万</div>
+  <div class="value-cell val-2025">社保内1万 + 社保外1万 = 2万</div>
+  <div class="value-cell val-2026">
+    <span class="tag tag-up">↓ 降低</span> 合计1.5万（社保内外共用）
+  </div>
+
+  <div class="label-cell"><span class="label-icon"></span>免赔额（臻选版）</div>
+  <div class="value-cell val-2024">—</div>
+  <div class="value-cell val-2025">社保内1万 + 社保外1万 = 2万</div>
+  <div class="value-cell val-2026">
+    <span class="tag tag-up">↓ 降低</span> 合计1.5万（社保内外共用）
+  </div>
+
+  <div class="label-cell"><span class="label-icon"></span>赔付比例（经典版）</div>
+  <div class="value-cell val-2024">80%（经社保）</div>
+  <div class="value-cell val-2025">80%（经社保）</div>
+  <div class="value-cell val-2026">80%（经社保）</div>
+
+  <div class="label-cell"><span class="label-icon"></span>赔付比例（臻选版）</div>
+  <div class="value-cell val-2024">—</div>
+  <div class="value-cell val-2025">100%（经社保）</div>
+  <div class="value-cell val-2026">100%（经社保）</div>
+
+  <!-- Section: 重大疾病医疗 -->
+  <div class="section-label">三、重大疾病医疗保险金</div>
+  <div class="label-cell"><span class="label-icon"></span>免赔额</div>
+  <div class="value-cell val-2024">0免赔</div>
+  <div class="value-cell val-2025">0免赔</div>
+  <div class="value-cell val-2026">0免赔</div>
+
+  <div class="label-cell"><span class="label-icon"></span>重疾种类</div>
+  <div class="value-cell val-2024">100种</div>
+  <div class="value-cell val-2025">100种</div>
+  <div class="value-cell val-2026">100种</div>
+
+  <!-- Section: 质子重离子 -->
+  <div class="section-label">四、质子重离子医疗保险金</div>
+  <div class="label-cell"><span class="label-icon"></span>保额</div>
+  <div class="value-cell val-2024">100万</div>
+  <div class="value-cell val-2025">100万（臻选版300万）</div>
+  <div class="value-cell val-2026">300万</div>
+
+  <div class="label-cell"><span class="label-icon"></span>免赔额</div>
+  <div class="value-cell val-2024">0免赔</div>
+  <div class="value-cell val-2025">0免赔</div>
+  <div class="value-cell val-2026">0免赔</div>
+
+  <div class="label-cell"><span class="label-icon"></span>医院范围</div>
+  <div class="value-cell val-2024">仅限指定医院</div>
+  <div class="value-cell val-2025">仅限指定医院</div>
+  <div class="value-cell val-2026">
+    <span class="tag tag-up">↑ 扩大</span> 不限医院，符合要求即可
+  </div>
+
+  <!-- Section: 特药 -->
+  <div class="section-label">五、特定药品费用医疗保险金</div>
+  <div class="label-cell"><span class="label-icon"></span>药品数量</div>
+  <div class="value-cell val-2024">148种</div>
+  <div class="value-cell val-2025">148种</div>
+  <div class="value-cell val-2026">
+    <span class="tag tag-up">↑ 扩展</span> 250种（+102种）
+  </div>
+
+  <div class="label-cell"><span class="label-icon"></span>CAR-T药品</div>
+  <div class="value-cell val-2024">2款</div>
+  <div class="value-cell val-2025">2款</div>
+  <div class="value-cell val-2026">
+    <span class="tag tag-up">↑ 大幅扩展</span> 7款
+  </div>
+
+  <!-- Section: 异地转诊 -->
+  <div class="section-label">六、重大疾病异地转诊</div>
+  <div class="label-cell"><span class="label-icon"></span>交通费</div>
+  <div class="value-cell val-2024">公共交通费用</div>
+  <div class="value-cell val-2025">公共交通费用</div>
+  <div class="value-cell val-2026">公共交通费用</div>
+
+  <div class="label-cell"><span class="label-icon"></span>住宿费</div>
+  <div class="value-cell val-2024">—</div>
+  <div class="value-cell val-2025">仅臻选版涵盖</div>
+  <div class="value-cell val-2026">
+    <span class="tag tag-up">↑ 新增</span> 经典版也涵盖，单日无限制
+  </div>
+
+  <!-- Section: 增值服务 -->
+  <div class="section-label">七、增值服务 / 新增保障</div>
+  <div class="label-cell"><span class="label-icon"></span>在线问诊药品</div>
+  <div class="value-cell val-2024">—</div>
+  <div class="value-cell val-2025">臻选版2000元限额，50%</div>
+  <div class="value-cell val-2026">
+    <span class="tag tag-up">↑ 延续</span> 臻选版2000元，50%
+  </div>
+
+  <div class="label-cell"><span class="label-icon"></span>康复医疗报销</div>
+  <div class="value-cell val-2024">—</div>
+  <div class="value-cell val-2025">—</div>
+  <div class="value-cell val-2026">
+    <span class="tag tag-new">新增</span> 16种特定疾病，100万保额，0免赔
+  </div>
+
+  <div class="label-cell"><span class="label-icon"></span>长期相伴权益</div>
+  <div class="value-cell val-2024">—</div>
+  <div class="value-cell val-2025">—</div>
+  <div class="value-cell val-2026">
+    <span class="tag tag-new">新增</span> 连续投保3年后：严重既往症可保、免赔额每年降1000元
+  </div>
+
+  <!-- Section: 既往症 -->
+  <div class="section-label">八、严重既往症处理</div>
+  <div class="label-cell"><span class="label-icon"></span>严重既往症</div>
+  <div class="value-cell val-2024">5类基础</div>
+  <div class="value-cell val-2025">5类基础</div>
+  <div class="value-cell val-2026">
+    <span class="tag tag-fix">调整</span> 新增高危结节、罕见病、重症肌无力
+    <br><span style="font-size:11px;color:#718096;margin-top:4px;display:block">但可通过"长期相伴权益"连续3年后部分报销（30%-70%递増）</span>
+  </div>
+
+  <!-- Section: 家庭共享 -->
+  <div class="section-label">九、可选责任</div>
+  <div class="label-cell"><span class="label-icon"></span>家庭共享免赔额</div>
+  <div class="value-cell val-2024">—</div>
+  <div class="value-cell val-2025">
+    <span class="tag tag-new">新增</span> 可选，共享免赔额
+  </div>
+  <div class="value-cell val-2026">延续</div>
+</div>
+
+<!-- Highlight Cards -->
+<div class="highlight-box">
+  <div class="card card-2025">
+    <h3><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="currentColor" opacity="0.15"/><path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>2025版亮点回顾</h3>
+    <div class="highlight-item hl-2025">
+      <span class="hl-num">1</span>
+      <div class="hl-text">
+        <span class="hl-title">首次取消健康告知</span>
+        延续免健康告知传统，患病人群可直接投保
+      </div>
+    </div>
+    <div class="highlight-item hl-2025">
+      <span class="hl-num">2</span>
+      <div class="hl-text">
+        <span class="hl-title">臻选版升级</span>
+        经典版80%赔付、臻选版100%赔付，满足不同需求
+      </div>
+    </div>
+    <div class="highlight-item hl-2025">
+      <span class="hl-num">3</span>
+      <div class="hl-text">
+        <span class="hl-title">新增家庭共享免赔额</span>
+        一家人投保可共享免赔额，降低理赔门槛
+      </div>
+    </div>
+    <div class="highlight-item hl-2025">
+      <span class="hl-num">4</span>
+      <div class="hl-text">
+        <span class="hl-title">新增在线问诊药品</span>
+        臻选版含在线问诊药品费用保障，2000元限额
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-2026">
+    <h3><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="currentColor" opacity="0.15"/><path d="M10 4v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>2026版核心升级</h3>
+    <div class="highlight-item hl-2026">
+      <span class="hl-num">1</span>
+      <div class="hl-text">
+        <span class="hl-title">免赔额大幅降低</span>
+        社保内外合计从2万降至1.5万，更容易达到理赔门槛
+      </div>
+    </div>
+    <div class="highlight-item hl-2026">
+      <span class="hl-num">2</span>
+      <div class="hl-text">
+        <span class="hl-title">特药保障全面扩展</span>
+        药品从148种增至250种，CAR-T从2款增至7款
+      </div>
+    </div>
+    <div class="highlight-item hl-2026">
+      <span class="hl-num">3</span>
+      <div class="hl-text">
+        <span class="hl-title">质子重离子医院扩大</span>
+        不再限特定医院，符合条件即可报销，大幅提升可及性
+      </div>
+    </div>
+    <div class="highlight-item hl-2026">
+      <span class="hl-num">4</span>
+      <div class="hl-text">
+        <span class="hl-title">创新"长期相伴权益"</span>
+        连续投保3年可获严重既往症保障和免赔额递减，长期客户更受益
+      </div>
+    </div>
+    <div class="highlight-item hl-2026">
+      <span class="hl-num">5</span>
+      <div class="hl-text">
+        <span class="hl-title">经典版含异地住宿费</span>
+        两版均含重大疾病异地转诊交通及住宿费，保障更均衡
+      </div>
+    </div>
+    <div class="highlight-item hl-2026">
+      <span class="hl-num">6</span>
+      <div class="hl-text">
+        <span class="hl-title">新增特定疾病康复医疗</span>
+        16种特定疾病康复费用可报销，100万保额，0免赔
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Price Reference -->
+<div class="price-section">
+  <h2>保费参考（经典版 / 臻选版）</h2>
+  <table class="price-table">
+    <thead>
+      <tr>
+        <th>年龄段</th>
+        <th>2025版</th>
+        <th>2026版</th>
+        <th>备注</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>0-5岁</td>
+        <td>1,068 / 1,688元</td>
+        <td>约1,068 / 1,688元</td>
+        <td class="trend-keep">持平</td>
+      </tr>
+      <tr>
+        <td>6-10岁</td>
+        <td>668 / 1,058元</td>
+        <td>约668 / 1,058元</td>
+        <td class="trend-keep">持平</td>
+      </tr>
+      <tr>
+        <td>31-35岁</td>
+        <td>568 / 898元</td>
+        <td>约568 / 898元</td>
+        <td class="trend-keep">持平</td>
+      </tr>
+      <tr>
+        <td>41-45岁</td>
+        <td>968 / 1,528元</td>
+        <td>约968 / 1,528元</td>
+        <td class="trend-keep">持平</td>
+      </tr>
+      <tr>
+        <td>56-60岁</td>
+        <td>2,698 / 4,268元</td>
+        <td>约2,498 / 3,968元</td>
+        <td class="trend-up">↓ 约下调8%</td>
+      </tr>
+      <tr>
+        <td>61-65岁</td>
+        <td>3,298 / 5,218元</td>
+        <td>约2,998 / 4,768元</td>
+        <td class="trend-up">↓ 约下调9%</td>
+      </tr>
+      <tr>
+        <td>66-70岁</td>
+        <td>3,898 / 6,168元</td>
+        <td>约3,498 / 5,568元</td>
+        <td class="trend-up">↓ 约下调10%</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="footer-note">
+  <strong>数据来源：</strong>众安在线财产保险股份有限公司官方条款及投保须知（2024版、2025版、2026版）<br>
+  <strong>说明：</strong>以上对比基于条款文件中公开信息整理，最终保障内容以保险合同条款为准。保费为参考值，实际保费以投保时为准。2026版"长期相伴权益"需连续投保满3年且重新投保指定版本方可享受。
+</div>
+
+</body>
+</html>

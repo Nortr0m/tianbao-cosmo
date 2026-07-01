@@ -1,0 +1,192 @@
+<view class="product-detail-page">
+  <!-- 加载中 -->
+  <van-skeleton wx:if="{{loading}}" title row="6" />
+
+  <!-- 产品信息 -->
+  <block wx:if="{{!loading && product}}">
+    <!-- 产品头部信息 -->
+    <view class="detail-header">
+      <view class="detail-header__top">
+        <view class="detail-header__company">
+          <van-image
+            wx:if="{{product.companyLogo}}"
+            src="{{product.companyLogo}}"
+            width="64rpx"
+            height="64rpx"
+            round
+            fit="cover"
+          />
+          <view wx:else class="detail-header__company-placeholder">{{product.companyName[0]}}</view>
+          <text class="detail-header__company-name">{{product.companyName}}</text>
+        </view>
+        <view class="detail-header__badges">
+          <van-tag wx:if="{{product.isHot}}" color="#E53E3E">热门</van-tag>
+          <van-tag wx:if="{{product.isNew}}" color="#38A169">新品</van-tag>
+        </view>
+      </view>
+      <text class="detail-header__name">{{product.name}}</text>
+      <text class="detail-header__summary">{{product.summary}}</text>
+      <view class="detail-header__tags">
+        <van-tag wx:for="{{product.tags}}" wx:key="index" type="primary" plain size="small">{{item}}</van-tag>
+      </view>
+      <view class="detail-header__price-row">
+        <view class="detail-header__price">
+          <text class="detail-header__price-unit">¥</text>
+          <text class="detail-header__price-value">{{formattedPrice}}</text>
+          <text class="detail-header__price-label">/{{product.priceUnit}}</text>
+        </view>
+        <view class="detail-header__coverage">
+          <text>保额 {{formattedCoverage}}元</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 产品特点 -->
+    <view class="detail-section">
+      <view class="section-title">产品特点</view>
+      <view class="feature-list">
+        <view wx:for="{{product.features}}" wx:key="index" class="feature-item">
+          <van-icon name="checked" color="#38A169" size="28rpx" />
+          <text>{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Tab切换 -->
+    <van-tabs active="{{activeTab}}" bind:change="onTabChange" sticky color="#2B6CB0">
+      <!-- 保险责任 -->
+      <van-tab title="保险责任" name="responsibility">
+        <view class="tab-content">
+          <view wx:for="{{product.responsibilities}}" wx:key="name" class="responsibility-item">
+            <view class="responsibility-item__header">
+              <view class="responsibility-item__title">
+                <van-tag wx:if="{{item.isMain}}" type="danger" size="small">主险</van-tag>
+                <van-tag wx:else type="primary" size="small">附加</van-tag>
+                <text class="responsibility-item__name">{{item.name}}</text>
+              </view>
+              <text class="responsibility-item__amount">{{item.amount}}</text>
+            </view>
+            <text class="responsibility-item__desc">{{item.description}}</text>
+          </view>
+
+          <!-- 投保条件 -->
+          <view class="detail-section">
+            <view class="section-title">投保条件</view>
+            <view class="condition-list">
+              <view wx:for="{{product.conditions}}" wx:key="index" class="condition-item">
+                <van-icon name="info-o" color="#2B6CB0" size="28rpx" />
+                <text>{{item}}</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 免责条款 -->
+          <view class="detail-section">
+            <view class="section-title">免责条款</view>
+            <view class="exclusion-list">
+              <view wx:for="{{product.exclusions}}" wx:key="index" class="exclusion-item">
+                <text class="exclusion-item__num">{{index + 1}}.</text>
+                <text>{{item}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </van-tab>
+
+      <!-- 利益演示 -->
+      <van-tab title="利益演示" name="benefit">
+        <view class="tab-content">
+          <view class="benefit-table">
+            <view class="benefit-table__header">
+              <text class="benefit-table__cell">保单年度</text>
+              <text class="benefit-table__cell">年龄</text>
+              <text class="benefit-table__cell">累计保费</text>
+              <text class="benefit-table__cell">现金价值</text>
+              <text class="benefit-table__cell">身故保障</text>
+            </view>
+            <view wx:for="{{benefitData}}" wx:key="year" class="benefit-table__row">
+              <text class="benefit-table__cell">第{{item.year}}年</text>
+              <text class="benefit-table__cell">{{item.age}}岁</text>
+              <text class="benefit-table__cell">{{formatMoney(item.premium)}}</text>
+              <text class="benefit-table__cell">{{formatMoney(item.cashValue)}}</text>
+              <text class="benefit-table__cell">{{formatMoney(item.deathBenefit)}}</text>
+            </view>
+          </view>
+          <view class="benefit-notice">
+            <van-icon name="info-o" color="#999" size="24rpx" />
+            <text>以上利益演示基于标准体，实际以保险合同为准</text>
+          </view>
+        </view>
+      </van-tab>
+
+      <!-- 保险公司 -->
+      <van-tab title="保险公司" name="company">
+        <view class="tab-content">
+          <view class="company-card">
+            <view class="company-card__header">
+              <van-image
+                wx:if="{{product.companyInfo.logo}}"
+                src="{{product.companyInfo.logo}}"
+                width="120rpx"
+                height="120rpx"
+                round
+                fit="cover"
+              />
+              <view wx:else class="company-card__logo-placeholder">{{product.companyInfo.name[0]}}</view>
+              <view class="company-card__info">
+                <text class="company-card__name">{{product.companyInfo.name}}</text>
+                <view class="company-card__rating">
+                  <text>风险评级：</text>
+                  <van-tag type="success">{{product.companyInfo.riskRating}}</van-tag>
+                </view>
+              </view>
+            </view>
+            <van-divider />
+            <view class="company-card__stats">
+              <view class="company-stat">
+                <text class="company-stat__value">{{product.companyInfo.registeredCapital}}</text>
+                <text class="company-stat__label">注册资本</text>
+              </view>
+              <view class="company-stat">
+                <text class="company-stat__value">{{product.companyInfo.satisfaction}}</text>
+                <text class="company-stat__label">客户满意度</text>
+              </view>
+              <view class="company-stat">
+                <text class="company-stat__value">{{product.companyInfo.complaintRate}}</text>
+                <text class="company-stat__label">投诉率</text>
+              </view>
+            </view>
+            <van-divider />
+            <view class="company-card__intro">
+              <text class="section-title">公司简介</text>
+              <text class="company-intro__text">{{product.companyInfo.introduction}}</text>
+            </view>
+          </view>
+        </view>
+      </van-tab>
+    </van-tabs>
+
+    <!-- 底部操作栏 -->
+    <view class="detail-footer safe-area-bottom">
+      <view class="detail-footer__actions">
+        <van-button
+          type="default"
+          size="normal"
+          custom-class="detail-footer__btn"
+          bindtap="onToggleCompare"
+        >
+          <van-icon name="{{isInCompare ? 'success' : 'plus'}}" size="28rpx" />
+          {{isInCompare ? '已加入对比' : '加入对比'}}
+        </van-button>
+        <van-button
+          type="primary"
+          size="normal"
+          custom-class="detail-footer__btn detail-footer__btn--primary"
+          bindtap="onGenerateCard"
+        >
+          生成卡片
+        </van-button>
+      </view>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,58 @@
+<view class="product-list-page">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <van-search
+      value="{{keyword}}"
+      placeholder="搜索产品名称或保险公司"
+      shape="round"
+      bind:search="onSearch"
+      bind:cancel="onSearchCancel"
+      bind:clear="onSearchCancel"
+    />
+    <view class="compare-toggle" bindtap="onToggleCompareMode">
+      <van-icon name="{{compareMode ? 'success' : 'exchange'}}" size="36rpx" color="{{compareMode ? '#2B6CB0' : '#999'}}" />
+      <text class="{{compareMode ? 'text-primary' : 'text-tertiary'}}">对比</text>
+    </view>
+  </view>
+
+  <!-- 分类Tab -->
+  <van-tabs active="{{activeTab}}" bind:change="onTabChange" sticky swipeable color="#2B6CB0">
+    <van-tab wx:for="{{tabs}}" wx:key="value" title="{{item.title}}">
+      <!-- 产品列表 -->
+      <view class="product-list">
+        <product-card
+          wx:for="{{products}}"
+          wx:key="id"
+          product="{{item}}"
+          showCompare="{{compareMode}}"
+          isCompared="{{isInCompareList(item.id)}}"
+          bind:compareChange="onCompareChange"
+        />
+      </view>
+
+      <!-- 加载状态 -->
+      <view class="loading-more" wx:if="{{loading}}">
+        <van-loading type="spinner" size="24px" /> 
+        <text class="loading-text">加载中...</text>
+      </view>
+
+      <!-- 没有更多 -->
+      <view class="no-more" wx:if="{{!hasMore && products.length > 0}}">
+        <van-divider contentPosition="center">没有更多了</van-divider>
+      </view>
+
+      <!-- 空状态 -->
+      <van-empty wx:if="{{!loading && products.length === 0}}" description="暂无产品" />
+    </van-tab>
+  </van-tabs>
+
+  <!-- 底部对比悬浮栏 -->
+  <compare-bar
+    compareList="{{compareList}}"
+    maxCount="{{maxCompareCount}}"
+    visible="{{showCompareBar}}"
+    bind:remove="onRemoveCompare"
+    bind:clear="onClearCompare"
+    bind:close="onCloseCompareBar"
+  />
+</view>

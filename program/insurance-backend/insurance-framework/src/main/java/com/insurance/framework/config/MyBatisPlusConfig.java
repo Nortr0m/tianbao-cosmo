@@ -1,0 +1,34 @@
+package com.insurance.framework.config;
+
+import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * MyBatis Plus配置
+ */
+@Configuration
+public class MyBatisPlusConfig {
+
+    /**
+     * MyBatis Plus拦截器
+     */
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        // 分页插件
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+        return interceptor;
+    }
+
+    /**
+     * 自动填充处理器
+     */
+    @Bean
+    public MetaObjectHandler metaObjectHandler() {
+        return new com.insurance.framework.handler.MyMetaObjectHandler();
+    }
+}

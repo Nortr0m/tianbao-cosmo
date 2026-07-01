@@ -1,0 +1,139 @@
+<view class="generate-page">
+  <!-- 预览区 -->
+  <view class="preview-section">
+    <view class="preview-area">
+      <block wx:if="{{previewTemplate}}">
+        <image class="preview-image" src="{{previewTemplate.backgroundUrl}}" mode="aspectFill" />
+        <view wx:if="{{watermarkEnabled}}" class="preview-watermark">{{watermarkText}}</view>
+      </block>
+      <view wx:else class="preview-placeholder">
+        <van-icon name="photo-o" size="80rpx" color="#ccc" />
+        <text>请选择模板预览</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分类选择 -->
+  <scroll-view scroll-x class="category-scroll" show-scrollbar="{{false}}">
+    <view class="category-list">
+      <view
+        wx:for="{{categories}}"
+        wx:key="id"
+        class="category-item {{activeCategory === item.id ? 'category-item--active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onCategoryChange"
+      >
+        <van-icon name="{{item.icon}}" size="32rpx" />
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 搜索框 -->
+  <view class="search-section">
+    <van-search
+      value="{{keyword}}"
+      placeholder="搜索模板"
+      shape="round"
+      bind:search="onSearch"
+      bind:cancel="onSearchCancel"
+      bind:clear="onSearchCancel"
+    />
+  </view>
+
+  <!-- 模板网格 -->
+  <view class="template-grid">
+    <view
+      wx:for="{{templates}}"
+      wx:key="id"
+      class="template-item {{previewTemplate && previewTemplate.id === item.id ? 'template-item--active' : ''}}"
+      data-template="{{item}}"
+      bindtap="onSelectTemplate"
+    >
+      <image class="template-item__image" src="{{item.thumbnail}}" mode="aspectFill" lazy-load />
+      <view class="template-item__info">
+        <text class="template-item__name text-ellipsis">{{item.name}}</text>
+        <view class="template-item__tags">
+          <van-tag wx:if="{{item.isHot}}" color="#E53E3E" size="small">热</van-tag>
+          <van-tag wx:if="{{item.isNew}}" color="#38A169" size="small">新</van-tag>
+        </view>
+      </view>
+      <view wx:if="{{previewTemplate && previewTemplate.id === item.id}}" class="template-item__selected">
+        <van-icon name="success" color="#2B6CB0" size="40rpx" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="loading-more" wx:if="{{loading}}">
+    <van-loading type="spinner" size="24px" />
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 配置区 -->
+  <view class="config-section" wx:if="{{previewTemplate}}">
+    <view class="section-title">配置信息</view>
+
+    <!-- 水印配置 -->
+    <view class="config-item">
+      <view class="config-item__label">
+        <text>水印</text>
+        <van-tag wx:if="{{!canRemoveWatermark}}" type="warning" size="small">VIP</van-tag>
+      </view>
+      <van-switch checked="{{watermarkEnabled}}" bind:change="onWatermarkChange" size="20px" />
+    </view>
+    <view class="config-item" wx:if="{{watermarkEnabled}}">
+      <text class="config-item__label">水印文字</text>
+      <input
+        class="config-item__input"
+        value="{{watermarkText}}"
+        placeholder="输入水印文字"
+        bindinput="onWatermarkTextChange"
+      />
+    </view>
+
+    <!-- 联系信息 -->
+    <view class="config-item">
+      <text class="config-item__label">姓名</text>
+      <input
+        class="config-item__input"
+        value="{{contactName}}"
+        placeholder="您的姓名"
+        bindinput="onContactNameChange"
+      />
+    </view>
+    <view class="config-item">
+      <text class="config-item__label">电话</text>
+      <input
+        class="config-item__input"
+        value="{{contactPhone}}"
+        placeholder="联系电话"
+        type="number"
+        bindinput="onContactPhoneChange"
+      />
+    </view>
+    <view class="config-item">
+      <text class="config-item__label">微信</text>
+      <input
+        class="config-item__input"
+        value="{{contactWechat}}"
+        placeholder="微信号"
+        bindinput="onContactWechatChange"
+      />
+    </view>
+  </view>
+
+  <!-- 底部生成按钮 -->
+  <view class="generate-footer safe-area-bottom">
+    <van-button
+      type="primary"
+      block
+      round
+      loading="{{generating}}"
+      disabled="{{!previewTemplate || generating}}"
+      bindtap="onGenerate"
+    >
+      {{generating ? '生成中...' : '生成卡片'}}
+    </van-button>
+  </view>
+</view>

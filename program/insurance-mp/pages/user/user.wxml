@@ -1,0 +1,102 @@
+<view class="user-page">
+  <!-- 用户信息卡片 -->
+  <view class="user-card">
+    <view class="user-card__bg"></view>
+    <view class="user-card__content">
+      <view class="user-info">
+        <view class="user-avatar" bindtap="onAvatarTap">
+          <image
+            wx:if="{{isLoggedIn && userInfo && userInfo.avatarUrl}}"
+            src="{{userInfo.avatarUrl}}"
+            class="user-avatar__image"
+            mode="aspectFill"
+          />
+          <view wx:else class="user-avatar__placeholder">
+            <van-icon name="user-o" size="60rpx" color="#FFFFFF" />
+          </view>
+        </view>
+        <view class="user-meta">
+          <block wx:if="{{isLoggedIn}}">
+            <text class="user-name">{{userInfo ? userInfo.nickName : '用户'}}</text>
+            <view class="user-level">
+              <van-tag color="{{memberLevelColor}}" text-color="#FFFFFF" size="small">
+                {{memberLevelName}}
+              </van-tag>
+            </view>
+          </block>
+          <block wx:else>
+            <text class="user-name">未登录</text>
+            <text class="user-tip">点击头像登录</text>
+          </block>
+        </view>
+      </view>
+
+      <!-- 统计信息 -->
+      <view class="user-stats">
+        <view class="user-stat" bindtap="onMenuTap" data-item="{{menuList[0]}}">
+          <text class="user-stat__value">{{compareCount}}</text>
+          <text class="user-stat__label">我的对比</text>
+        </view>
+        <view class="user-stat" bindtap="onMenuTap" data-item="{{menuList[1]}}">
+          <text class="user-stat__value">{{cardCount}}</text>
+          <text class="user-stat__label">我的卡片</text>
+        </view>
+        <view class="user-stat" bindtap="onOpenVip">
+          <text class="user-stat__value">
+            <van-icon name="vip-card-o" size="32rpx" color="{{memberLevelColor}}" />
+          </text>
+          <text class="user-stat__label">会员中心</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-section">
+    <van-cell-group>
+      <van-cell
+        wx:for="{{menuList}}"
+        wx:key="id"
+        title="{{item.name}}"
+        is-link
+        bindtap="onMenuTap"
+        data-item="{{item}}"
+      >
+        <van-icon
+          slot="icon"
+          name="{{item.icon}}"
+          size="40rpx"
+          color="{{item.color}}"
+          custom-style="margin-right: 16rpx;"
+        />
+        <van-tag wx:if="{{item.badge > 0}}" type="danger" round>{{item.badge}}</van-tag>
+      </van-cell>
+    </van-cell-group>
+  </view>
+
+  <!-- 登录/退出按钮 -->
+  <view class="action-section">
+    <van-button
+      wx:if="{{!isLoggedIn}}"
+      type="primary"
+      block
+      round
+      bindtap="onLogin"
+    >
+      微信一键登录
+    </van-button>
+    <van-button
+      wx:if="{{isLoggedIn}}"
+      type="danger"
+      block
+      round
+      plain
+      bindtap="onLogout"
+    >
+      退出登录
+    </van-button>
+  </view>
+
+  <!-- 底部安全区域 -->
+  <view class="safe-area-bottom"></view>
+</view>
