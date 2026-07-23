@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-06-18 08:03:00",
+  "companies": {
+    "total": 202,
+    "with_equity_data": 10,
+    "with_products": 71
+  },
+  "products": {
+    "total": 215,
+    "by_type": {
+      "增额终身寿险": 76,
+      "年金险": 107,
+      "重疾险": 32
+    },
+    "company_matched": 207,
+    "company_unmatched": 8,
+    "unmatched_products": [
+      "人保寿险民享盈年金保险（A款）（互联网专属）",
+      "人保寿险民享盈年金保险（B款）（互联网专属）",
+      "人保寿险无敌宝宝2.0少儿重大疾病保险（互联网专属）",
+      "信美相互达尔文宝贝计划15号重大疾病保险",
+      "德华安顾人寿大爱无疆·易核重疾险（互联网）",
+      "德华安顾安享保重大疾病保险（2025版）（互联网）",
+      "招商仁和青云卫6号少儿重大疾病保险（互联网）",
+      "紫金康康保个人重大疾病保险（互联网专属2025版）"
+    ]
+  },
+  "categories": {
+    "增额寿": 2,
+    "年金险": 3,
+    "重疾险": 1
+  },
+  "files_generated": {
+    "company_sql": "c:\\Users\\Administrator\\.trae-cn\\work\\6a33333854065702e444a6f8\\04_import_companies.sql",
+    "product_sql": "c:\\Users\\Administrator\\.trae-cn\\work\\6a33333854065702e444a6f8\\05_import_products.sql",
+    "document_json": "c:\\Users\\Administrator\\.trae-cn\\work\\6a33333854065702e444a6f8\\product_documents.json"
+  }
+}

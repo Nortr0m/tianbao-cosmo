@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 重疾险保费计算结果VO
@@ -48,4 +49,16 @@ public class CriticalPremiumVO implements Serializable {
 
     /** 总保费 */
     private BigDecimal totalPremium;
+
+    /** 错误信息（费率查询异常时设置） */
+    private String errorMessage;
+
+    /** 基础保费（不含可选责任） */
+    private BigDecimal basePremium;
+
+    /** 责任系数（总系数，如1.2表示基础保费×1.2） */
+    private BigDecimal responsibilityCoefficient;
+
+    /** 保费构成明细 */
+    private List<PremiumComponentVO> premiumComponents;
 }

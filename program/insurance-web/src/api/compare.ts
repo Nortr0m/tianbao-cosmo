@@ -70,3 +70,7 @@ export function getCompareDetail(id: number): Promise<CompareResult> {
 export function saveCompare(params: CompareParams): Promise<{ id: number }> {
   return post<{ id: number }>('/v1/compare/save', params)
 }
+
+export function deleteCompare(id: number): Promise<void> {
+  return post<void>(`/v1/compare/${id}/delete`)
+}

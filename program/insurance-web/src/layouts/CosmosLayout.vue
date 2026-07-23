@@ -1,26 +1,46 @@
 <template>
   <div class="cosmos-layout">
-    <!-- 悬浮导航栏：鼠标移到顶部时显示 -->
-    <div class="cosmos-nav-trigger" @mouseenter="showNav = true">
-      <div class="cosmos-nav-bar" :class="{ show: showNav }" @mouseleave="showNav = false">
-        <div class="nav-content">
-          <!-- Logo -->
-          <div class="nav-logo" @click="router.push('/')">
-            <img src="/logo.jpg" alt="天保星君" class="logo-img" />
-            <span class="logo-text">天保星君</span>
+    <!-- 顶部导航栏容器 -->
+    <div class="cosmos-nav-bar">
+      <!-- 品牌触发点：加载完成后显示，悬停时展开导航栏 -->
+      <div
+        class="brand-trigger"
+        :class="{ show: showTrigger, hide: showNav }"
+        @mouseenter="onBrandEnter"
+      >
+        <img src="/logo.jpg" alt="天保星君" class="trigger-logo" />
+        <span class="trigger-text">天保星君</span>
+        <span class="trigger-slogan">天保定尔 · 星辉引路</span>
+      </div>
+
+      <!-- 完整导航栏：悬停时展开，离开时收起 -->
+      <div
+        class="nav-bar-full"
+        :class="{ show: showNav }"
+        @mouseleave="onNavLeave"
+      >
+        <div class="nav-inner">
+          <!-- 左侧品牌标识 -->
+          <div class="nav-brand" @click="showNav = false; router.push('/')">
+            <img src="/logo.jpg" alt="天保星君" class="nav-brand-logo" />
+            <div class="nav-brand-text-group">
+              <span class="nav-brand-text">天保星君</span>
+              <span class="nav-brand-slogan">天保定尔 · 星辉引路</span>
+            </div>
           </div>
-          <!-- 导航链接 -->
+          <!-- 中间导航链接 -->
           <nav class="nav-links">
             <router-link
               v-for="item in navItems"
               :key="item.path"
               :to="item.path"
-              class="nav-link"
+              :class="['nav-link', { active: route.path === item.path }]"
+              @click="showNav = false"
             >
               {{ item.title }}
             </router-link>
           </nav>
-          <!-- 用户操作 -->
+          <!-- 用户操作（右侧） -->
           <div class="nav-actions">
             <template v-if="userStore.isLoggedIn">
               <el-dropdown @command="handleCommand" trigger="click">
@@ -45,8 +65,8 @@
               </el-dropdown>
             </template>
             <template v-else>
-              <el-button type="primary" size="small" @click="router.push('/login')">登录</el-button>
-              <el-button size="small" @click="router.push('/register')">注册</el-button>
+              <el-button type="primary" size="small" @click="showNav = false; router.push('/login')">登录</el-button>
+              <el-button size="small" @click="showNav = false; router.push('/register')">注册</el-button>
             </template>
           </div>
         </div>
@@ -59,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import {
@@ -73,14 +93,31 @@ import {
 const router = useRouter()
 const userStore = useUserStore()
 const showNav = ref(false)
+const showTrigger = ref(false)
+const navCooldown = ref(false)
+
+const route = useRoute()
 
 const navItems = [
+  { title: '首页', path: '/' },
   { title: '产品列表', path: '/product/list' },
   { title: '产品对比', path: '/compare' },
   { title: '卡片生成', path: '/card/generate' }
 ]
 
+function onBrandEnter() {
+  if (navCooldown.value) return
+  showNav.value = true
+}
+
+function onNavLeave() {
+  showNav.value = false
+  navCooldown.value = true
+  setTimeout(() => (navCooldown.value = false), 300)
+}
+
 function handleCommand(command: string) {
+  showNav.value = false
   switch (command) {
     case 'user':
       router.push('/user')
@@ -94,6 +131,19 @@ function handleCommand(command: string) {
       break
   }
 }
+
+// 星空加载完成后显示品牌触发点
+function onCosmosLoaded() {
+  showTrigger.value = true
+}
+
+onMounted(() => {
+  window.addEventListener('cosmos-loaded', onCosmosLoaded)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('cosmos-loaded', onCosmosLoaded)
+})
 </script>
 
 <style scoped>
@@ -105,38 +155,148 @@ function handleCommand(command: string) {
   position: relative;
 }
 
-/* 触发区域：顶部 64px 热区 */
-.cosmos-nav-trigger {
+/* 导航栏容器 */
+.cosmos-nav-bar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: 64px;
   z-index: 200;
+  pointer-events: none;
 }
 
-/* 导航栏本体 */
-.cosmos-nav-bar {
-  position: absolute;
+/* 品牌触发点：初始完全隐藏，加载完成后淡入 */
+.brand-trigger {
+  position: fixed;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 8px 20px;
+  z-index: 201;
+  pointer-events: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s 0.3s;
+}
+
+.brand-trigger.show {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0s;
+}
+
+/* 展开时原地隐藏，延迟 visibility 以避免 mouseleave 误触发 */
+.brand-trigger.hide {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0s 0.35s;
+}
+
+/* 品牌触发点放大 */
+.trigger-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  object-fit: contain;
+  box-shadow: 0 0 16px rgba(179, 71, 217, 0.55);
+}
+
+.trigger-text {
+  font-size: 30px;
+  font-weight: 700;
+  color: #ffd27a;
+  letter-spacing: 5px;
+  white-space: nowrap;
+  text-shadow: 0 0 16px rgba(255, 215, 122, 0.4);
+}
+
+.trigger-slogan {
+  font-size: 14px;
+  color: rgba(255,210,122,0.6);
+  font-weight: 400;
+  letter-spacing: 2px;
+  margin-left: 4px;
+  border-left: 1px solid rgba(255,210,122,0.3);
+  padding-left: 16px;
+  margin-left: 16px;
+}
+
+/* 导航栏左侧品牌标识 */
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-brand:hover {
+  filter: brightness(1.2);
+}
+
+.nav-brand-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: contain;
+  box-shadow: 0 0 16px rgba(179, 71, 217, 0.55);
+}
+
+.nav-brand-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-brand-text {
+  font-size: 22px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #c855f0, #00f0ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.nav-brand-slogan {
+  font-size: 11px;
+  color: rgba(136, 136, 170, 0.8);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* 完整导航栏：悬停时展开 */
+.nav-bar-full {
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: 64px;
-  background-color: rgba(10, 10, 15, 0.9);
+  background-color: rgba(10, 10, 15, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(42, 42, 74, 0.6);
   transform: translateY(-100%);
   opacity: 0;
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+  pointer-events: auto;
 }
 
-.cosmos-nav-bar.show {
+.nav-bar-full.show {
   transform: translateY(0);
   opacity: 1;
 }
 
-.nav-content {
+.nav-inner {
   max-width: 1400px;
   margin: 0 auto;
   height: 100%;
@@ -144,6 +304,7 @@ function handleCommand(command: string) {
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
+  position: relative;
 }
 
 .nav-glow-line {
@@ -156,57 +317,39 @@ function handleCommand(command: string) {
   box-shadow: 0 0 10px rgba(179, 71, 217, 0.5), 0 0 20px rgba(0, 229, 255, 0.3);
 }
 
-/* Logo */
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  transition: filter 0.2s;
-}
-
-.nav-logo:hover {
-  filter: brightness(1.2);
-}
-
-.logo-img {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  object-fit: contain;
-  box-shadow: 0 0 8px rgba(179, 71, 217, 0.4);
-}
-
-.logo-text {
-  font-size: 20px;
-  font-weight: 700;
-  background: linear-gradient(90deg, #b347d9, #00e5ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: 2px;
-}
-
 /* 导航链接 */
 .nav-links {
   display: flex;
-  gap: 28px;
+  gap: 32px;
 }
 
 .nav-link {
   text-decoration: none;
   color: #8888aa;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
-  padding: 6px 0;
+  padding: 8px 0;
   position: relative;
-  transition: color 0.2s, text-shadow 0.2s;
+  transition: all 0.2s ease;
   letter-spacing: 1px;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link.active {
   color: #00e5ff;
   text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #b347d9, #00e5ff);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(179, 71, 217, 0.5), 0 0 8px rgba(0, 229, 255, 0.3);
 }
 
 /* 用户操作 */

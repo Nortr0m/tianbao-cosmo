@@ -6,7 +6,7 @@
           <el-radio-button
             v-for="age in startAgeOptions"
             :key="age"
-            :label="age"
+            :value="age"
           >
             {{ age }}岁
           </el-radio-button>
@@ -15,8 +15,8 @@
 
       <el-form-item label="领取方式">
         <el-radio-group v-model="form.payoutMethod">
-          <el-radio-button label="yearly">年领</el-radio-button>
-          <el-radio-button label="monthly">月领</el-radio-button>
+          <el-radio-button value="yearly">年领</el-radio-button>
+          <el-radio-button value="monthly">月领</el-radio-button>
         </el-radio-group>
         <span class="hint">月领金额约为年领金额的8.5%</span>
       </el-form-item>
@@ -26,7 +26,7 @@
           <el-radio-button
             v-for="period in guaranteePeriodOptions"
             :key="period.value"
-            :label="period.value"
+            :value="period.value"
           >
             {{ period.label }}
           </el-radio-button>
@@ -38,7 +38,7 @@
           <el-radio-button
             v-for="rule in increaseOptions"
             :key="rule.value"
-            :label="rule.value"
+            :value="rule.value"
           >
             {{ rule.label }}
           </el-radio-button>
@@ -128,29 +128,37 @@ watch(
 <style scoped>
 .payout-plan {
   padding: 8px 0;
+  color: var(--text-primary);
 }
 
 .hint {
   margin-left: 12px;
   font-size: 12px;
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .plan-summary {
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 .summary-item {
-  background: #f5f7fa;
-  border-radius: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
   padding: 16px;
   text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.summary-item:hover {
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-neon-purple);
 }
 
 .summary-item .label {
   display: block;
   font-size: 13px;
-  color: #909399;
+  color: var(--text-muted);
   margin-bottom: 8px;
 }
 
@@ -158,6 +166,6 @@ watch(
   display: block;
   font-size: 20px;
   font-weight: 700;
-  color: #409eff;
+  color: var(--accent-cyan);
 }
 </style>

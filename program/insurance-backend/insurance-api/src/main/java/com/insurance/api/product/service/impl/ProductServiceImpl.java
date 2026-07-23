@@ -4,8 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.insurance.api.entity.*;
 import com.insurance.api.mapper.*;
+import com.insurance.api.product.vo.DiseaseStatVO;
+import com.insurance.api.product.vo.DiseaseVO;
 import com.insurance.api.product.dto.ProductQueryDTO;
 import com.insurance.api.product.service.ProductService;
+import com.insurance.api.product.service.ProductBriefGeneratorService;
 import com.insurance.api.product.vo.*;
 import com.insurance.common.exception.BusinessException;
 import com.insurance.common.result.PageResult;
@@ -37,6 +40,10 @@ public class ProductServiceImpl implements ProductService {
     private final ResponsibilityCategoryMapper responsibilityCategoryMapper;
     private final ResponsibilityItemMapper responsibilityItemMapper;
     private final ProductDocumentStatusMapper productDocumentStatusMapper;
+    private final ProductBriefGeneratorService productBriefGeneratorService;
+    private final DiseaseMapper diseaseMapper;
+    private final ProductDiseaseMapper productDiseaseMapper;
+    private final ProductDividendConfigMapper productDividendConfigMapper;
 
     @Override
     public PageResult<ProductVO> listProducts(ProductQueryDTO queryDTO) {
@@ -49,24 +56,68 @@ public class ProductServiceImpl implements ProductService {
         if (queryDTO.getProductName() != null && !queryDTO.getProductName().isEmpty()) {
             wrapper.like(ProductBase::getProductName, queryDTO.getProductName());
         }
+        if (queryDTO.getKeyword() != null && !queryDTO.getKeyword().isEmpty()) {
+            wrapper.like(ProductBase::getProductName, queryDTO.getKeyword());
+        }
         if (queryDTO.getCompanyId() != null) {
             wrapper.eq(ProductBase::getCompanyId, queryDTO.getCompanyId());
         }
         if (queryDTO.getProductType() != null) {
             wrapper.eq(ProductBase::getProductType, queryDTO.getProductType());
         }
-        wrapper.orderByDesc(ProductBase::getCreatedAt);
+        if (queryDTO.getSubType() != null) {
+            wrapper.eq(ProductBase::getSubType, queryDTO.getSubType());
+        }
+        if (queryDTO.getPaymentPeriod() != null && !queryDTO.getPaymentPeriod().isEmpty()) {
+            // payment_years是JSON数组，使用JSON_CONTAINS匹配
+            // 第二个参数必须是JSON格式：数字直接写，字符串需要加双引号
+            // 外层用单引号包裹作为SQL字符串字面量
+            String periodValue = queryDTO.getPaymentPeriod();
+            String jsonValue;
+            try {
+                // 尝试解析为数字
+                Integer.parseInt(periodValue);
+                jsonValue = "'" + periodValue + "'";
+            } catch (NumberFormatException e) {
+                jsonValue = "'\"" + periodValue + "\"'";
+            }
+            wrapper.isNotNull(ProductBase::getPaymentYears)
+                    .apply("JSON_CONTAINS(payment_years, " + jsonValue + ")");
+        }
+        // 排序逻辑：默认按 createdAt DESC
+        String sortBy = queryDTO.getSortBy() != null && !queryDTO.getSortBy().isEmpty() ? queryDTO.getSortBy() : "createdAt";
+        String sortOrder = queryDTO.getSortOrder() != null && !queryDTO.getSortOrder().isEmpty() ? queryDTO.getSortOrder() : "desc";
+        boolean isAsc = "asc".equalsIgnoreCase(sortOrder);
+        if ("createdAt".equals(sortBy)) {
+            if (isAsc) {
+                wrapper.orderByAsc(ProductBase::getCreatedAt);
+            } else {
+                wrapper.orderByDesc(ProductBase::getCreatedAt);
+            }
+        } else {
+            wrapper.orderByDesc(ProductBase::getCreatedAt);
+        }
 
         Page<ProductBase> resultPage = productBaseMapper.selectPage(page, wrapper);
         List<Long> companyIds = resultPage.getRecords().stream()
                 .map(ProductBase::getCompanyId)
                 .distinct()
                 .collect(Collectors.toList());
-        Map<Long, String> companyNameMap = insuranceCompanyMapper.selectBatchIds(companyIds).stream()
-                .collect(Collectors.toMap(InsuranceCompany::getCompanyId, InsuranceCompany::getCompanyName));
+        final Map<Long, String> companyNameMap;
+        final Map<Long, String> companyLogoMap;
+        if (!companyIds.isEmpty()) {
+            List<InsuranceCompany> companies = insuranceCompanyMapper.selectBatchIds(companyIds);
+            companyNameMap = companies.stream()
+                    .collect(Collectors.toMap(InsuranceCompany::getCompanyId, InsuranceCompany::getCompanyName));
+            companyLogoMap = companies.stream()
+                    .collect(Collectors.toMap(InsuranceCompany::getCompanyId, InsuranceCompany::getLogoUrl));
+        } else {
+            companyNameMap = new java.util.HashMap<>();
+            companyLogoMap = new java.util.HashMap<>();
+        }
 
         List<ProductVO> list = resultPage.getRecords().stream()
-                .map(p -> convertToVO(p, companyNameMap.get(p.getCompanyId())))
+                .map(p -> convertToVO(p, companyNameMap.get(p.getCompanyId()), companyLogoMap.get(p.getCompanyId())))
                 .collect(Collectors.toList());
         return PageResult.of(resultPage.getCurrent(), resultPage.getSize(), resultPage.getTotal(), list);
     }
@@ -79,7 +130,8 @@ public class ProductServiceImpl implements ProductService {
         }
         InsuranceCompany company = insuranceCompanyMapper.selectById(product.getCompanyId());
         String companyName = company != null ? company.getCompanyName() : null;
-        ProductVO vo = convertToVO(product, companyName);
+        String companyLogo = company != null ? company.getLogoUrl() : null;
+        ProductVO vo = convertToVO(product, companyName, companyLogo);
 
         // 查询子类数据
         Object subData = null;
@@ -112,6 +164,26 @@ public class ProductServiceImpl implements ProductService {
             vo.setHasRules(docStatus.getHasRules());
             vo.setHasRateTable(docStatus.getHasRateTable());
             vo.setHasCashValue(docStatus.getHasCashValue());
+        }
+
+        // 查询疾病列表和统计（仅重疾险产品）
+        if (product.getProductType() != null && product.getProductType() == 1) {
+            vo.setDiseases(getProductDiseases(productId, null));
+            vo.setDiseaseStat(getDiseaseStat(productId));
+        }
+
+        // 查询分红配置
+        try {
+            LambdaQueryWrapper<ProductDividendConfig> dividendWrapper = new LambdaQueryWrapper<>();
+            dividendWrapper.eq(ProductDividendConfig::getProductId, productId);
+            ProductDividendConfig dividendConfig = productDividendConfigMapper.selectOne(dividendWrapper);
+            if (dividendConfig != null) {
+                ProductDividendConfigVO configVO = new ProductDividendConfigVO();
+                BeanUtils.copyProperties(dividendConfig, configVO);
+                vo.setDividendConfig(configVO);
+            }
+        } catch (Exception e) {
+            log.warn("查询分红配置失败: {}", e.getMessage());
         }
 
         return vo;
@@ -173,6 +245,7 @@ public class ProductServiceImpl implements ProductService {
                 ivo.setItemId(item.getItemId());
                 ivo.setItemCode(item.getItemCode());
                 ivo.setItemName(item.getItemName());
+                ivo.setDescription(item.getDescription());
                 ivo.setIsSupported(pr.getIsSupported());
                 ivo.setSupportedOptions(pr.getSupportedOptions());
                 ivo.setDefaultOption(pr.getDefaultOption());
@@ -210,10 +283,13 @@ public class ProductServiceImpl implements ProductService {
                 .map(ProductBase::getCompanyId)
                 .distinct()
                 .collect(Collectors.toList());
-        Map<Long, String> companyNameMap = insuranceCompanyMapper.selectBatchIds(companyIds).stream()
+        List<InsuranceCompany> companies = insuranceCompanyMapper.selectBatchIds(companyIds);
+        Map<Long, String> companyNameMap = companies.stream()
                 .collect(Collectors.toMap(InsuranceCompany::getCompanyId, InsuranceCompany::getCompanyName));
+        Map<Long, String> companyLogoMap = companies.stream()
+                .collect(Collectors.toMap(InsuranceCompany::getCompanyId, InsuranceCompany::getLogoUrl));
         return products.stream()
-                .map(p -> convertToVO(p, companyNameMap.get(p.getCompanyId())))
+                .map(p -> convertToVO(p, companyNameMap.get(p.getCompanyId()), companyLogoMap.get(p.getCompanyId())))
                 .collect(Collectors.toList());
     }
 
@@ -249,18 +325,40 @@ public class ProductServiceImpl implements ProductService {
                 .map(ProductBase::getCompanyId)
                 .distinct()
                 .collect(Collectors.toList());
-        Map<Long, String> companyNameMap = insuranceCompanyMapper.selectBatchIds(companyIds).stream()
+        List<InsuranceCompany> companies = insuranceCompanyMapper.selectBatchIds(companyIds);
+        Map<Long, String> companyNameMap = companies.stream()
                 .collect(Collectors.toMap(InsuranceCompany::getCompanyId, InsuranceCompany::getCompanyName));
+        Map<Long, String> companyLogoMap = companies.stream()
+                .collect(Collectors.toMap(InsuranceCompany::getCompanyId, InsuranceCompany::getLogoUrl));
         return products.stream()
-                .map(p -> convertToVO(p, companyNameMap.get(p.getCompanyId())))
+                .map(p -> convertToVO(p, companyNameMap.get(p.getCompanyId()), companyLogoMap.get(p.getCompanyId())))
                 .collect(Collectors.toList());
     }
 
-    private ProductVO convertToVO(ProductBase product, String companyName) {
+    private ProductVO convertToVO(ProductBase product, String companyName, String companyLogo) {
         ProductVO vo = new ProductVO();
         BeanUtils.copyProperties(product, vo);
         vo.setCompanyName(companyName);
+        vo.setCompanyLogo(companyLogo);
         vo.setSubType(product.getSubType());
+
+        // 解析产品亮点JSON
+        if (product.getProductHighlights() != null && !product.getProductHighlights().isEmpty()) {
+            try {
+                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                List<String> highlights = mapper.readValue(
+                    product.getProductHighlights(),
+                    new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {}
+                );
+                vo.setProductHighlights(highlights);
+            } catch (Exception e) {
+                // 解析失败时设置为空列表
+                vo.setProductHighlights(new java.util.ArrayList<>());
+            }
+        } else {
+            vo.setProductHighlights(new java.util.ArrayList<>());
+        }
+
         switch (product.getProductType()) {
             case 1:
                 vo.setProductTypeDesc("重疾险");
@@ -275,6 +373,354 @@ public class ProductServiceImpl implements ProductService {
                 vo.setProductTypeDesc("未知类型");
                 break;
         }
+        return vo;
+    }
+
+    @Override
+    public List<DiseaseVO> getProductDiseases(Long productId, Integer diseaseType) {
+        ProductBase product = productBaseMapper.selectById(productId);
+        if (product == null) {
+            throw new BusinessException("产品不存在");
+        }
+
+        LambdaQueryWrapper<ProductDisease> pdWrapper = new LambdaQueryWrapper<>();
+        pdWrapper.eq(ProductDisease::getProductId, productId);
+        if (diseaseType != null) {
+            pdWrapper.eq(ProductDisease::getDiseaseType, diseaseType);
+        }
+        pdWrapper.orderByAsc(ProductDisease::getDiseaseType, ProductDisease::getSortOrder);
+        List<ProductDisease> pdList = productDiseaseMapper.selectList(pdWrapper);
+
+        if (pdList.isEmpty()) {
+            // 如果产品没有关联疾病，则从疾病字典表中按产品类型返回默认疾病列表
+            return getDefaultDiseasesByProductType(product.getProductType(), diseaseType);
+        }
+
+        List<Long> diseaseIds = pdList.stream()
+                .map(ProductDisease::getDiseaseId)
+                .distinct()
+                .collect(Collectors.toList());
+        List<Disease> diseases = diseaseMapper.selectBatchIds(diseaseIds);
+        Map<Long, Disease> diseaseMap = diseases.stream()
+                .collect(Collectors.toMap(Disease::getDiseaseId, d -> d));
+
+        return pdList.stream()
+                .filter(pd -> diseaseMap.containsKey(pd.getDiseaseId()))
+                .map(pd -> convertToDiseaseVO(diseaseMap.get(pd.getDiseaseId()), pd))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public DiseaseStatVO getDiseaseStat(Long productId) {
+        ProductBase product = productBaseMapper.selectById(productId);
+        if (product == null) {
+            throw new BusinessException("产品不存在");
+        }
+
+        DiseaseStatVO stat = new DiseaseStatVO();
+
+        LambdaQueryWrapper<ProductDisease> pdWrapper = new LambdaQueryWrapper<>();
+        pdWrapper.eq(ProductDisease::getProductId, productId);
+        List<ProductDisease> pdList = productDiseaseMapper.selectList(pdWrapper);
+
+        if (pdList.isEmpty()) {
+            // 如果产品没有关联疾病，则从疾病字典表中按产品类型统计
+            return getDefaultDiseaseStat(product.getProductType());
+        }
+
+        List<Long> diseaseIds = pdList.stream()
+                .map(ProductDisease::getDiseaseId)
+                .distinct()
+                .collect(Collectors.toList());
+        List<Disease> diseases = diseaseMapper.selectBatchIds(diseaseIds);
+        Map<Long, Disease> diseaseMap = diseases.stream()
+                .collect(Collectors.toMap(Disease::getDiseaseId, d -> d));
+
+        int criticalCount = 0;
+        int mediumCount = 0;
+        int lightCount = 0;
+        int statutoryCriticalCount = 0;
+        int statutoryLightCount = 0;
+        int highIncidenceCount = 0;
+
+        for (ProductDisease pd : pdList) {
+            Disease disease = diseaseMap.get(pd.getDiseaseId());
+            if (disease == null) continue;
+            Integer type = pd.getDiseaseType() != null ? pd.getDiseaseType() : disease.getDiseaseType();
+            if (type == null) continue;
+            switch (type) {
+                case 1:
+                    criticalCount++;
+                    if (disease.getIsStatutory() != null && disease.getIsStatutory() == 1) {
+                        statutoryCriticalCount++;
+                    }
+                    break;
+                case 2:
+                    mediumCount++;
+                    break;
+                case 3:
+                    lightCount++;
+                    if (disease.getIsStatutory() != null && disease.getIsStatutory() == 1) {
+                        statutoryLightCount++;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            if (disease.getIsHighIncidence() != null && disease.getIsHighIncidence() == 1) {
+                highIncidenceCount++;
+            }
+        }
+
+        stat.setCriticalCount(criticalCount);
+        stat.setMediumCount(mediumCount);
+        stat.setLightCount(lightCount);
+        stat.setStatutoryCriticalCount(statutoryCriticalCount);
+        stat.setStatutoryLightCount(statutoryLightCount);
+        stat.setHighIncidenceCount(highIncidenceCount);
+
+        return stat;
+    }
+
+    /**
+     * 从疾病字典表获取默认疾病列表（当产品未配置疾病关联时使用）
+     */
+    private List<DiseaseVO> getDefaultDiseasesByProductType(Integer productType, Integer diseaseType) {
+        // 仅重疾险产品返回疾病数据
+        if (productType == null || productType != 1) {
+            return new ArrayList<>();
+        }
+
+        LambdaQueryWrapper<Disease> wrapper = new LambdaQueryWrapper<>();
+        if (diseaseType != null) {
+            wrapper.eq(Disease::getDiseaseType, diseaseType);
+        }
+        wrapper.orderByAsc(Disease::getDiseaseType, Disease::getSortOrder);
+        List<Disease> diseases = diseaseMapper.selectList(wrapper);
+
+        return diseases.stream()
+                .map(this::convertToDiseaseVO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 从疾病字典表获取默认疾病统计（当产品未配置疾病关联时使用）
+     */
+    private DiseaseStatVO getDefaultDiseaseStat(Integer productType) {
+        DiseaseStatVO stat = new DiseaseStatVO();
+        // 仅重疾险产品返回疾病数据
+        if (productType == null || productType != 1) {
+            stat.setCriticalCount(0);
+            stat.setMediumCount(0);
+            stat.setLightCount(0);
+            stat.setStatutoryCriticalCount(0);
+            stat.setStatutoryLightCount(0);
+            stat.setHighIncidenceCount(0);
+            return stat;
+        }
+
+        LambdaQueryWrapper<Disease> criticalWrapper = new LambdaQueryWrapper<>();
+        criticalWrapper.eq(Disease::getDiseaseType, 1);
+        int criticalCount = Math.toIntExact(diseaseMapper.selectCount(criticalWrapper));
+
+        LambdaQueryWrapper<Disease> mediumWrapper = new LambdaQueryWrapper<>();
+        mediumWrapper.eq(Disease::getDiseaseType, 2);
+        int mediumCount = Math.toIntExact(diseaseMapper.selectCount(mediumWrapper));
+
+        LambdaQueryWrapper<Disease> lightWrapper = new LambdaQueryWrapper<>();
+        lightWrapper.eq(Disease::getDiseaseType, 3);
+        int lightCount = Math.toIntExact(diseaseMapper.selectCount(lightWrapper));
+
+        LambdaQueryWrapper<Disease> statutoryCriticalWrapper = new LambdaQueryWrapper<>();
+        statutoryCriticalWrapper.eq(Disease::getDiseaseType, 1)
+                .eq(Disease::getIsStatutory, 1);
+        int statutoryCriticalCount = Math.toIntExact(diseaseMapper.selectCount(statutoryCriticalWrapper));
+
+        LambdaQueryWrapper<Disease> statutoryLightWrapper = new LambdaQueryWrapper<>();
+        statutoryLightWrapper.eq(Disease::getDiseaseType, 3)
+                .eq(Disease::getIsStatutory, 1);
+        int statutoryLightCount = Math.toIntExact(diseaseMapper.selectCount(statutoryLightWrapper));
+
+        LambdaQueryWrapper<Disease> highIncidenceWrapper = new LambdaQueryWrapper<>();
+        highIncidenceWrapper.eq(Disease::getIsHighIncidence, 1);
+        int highIncidenceCount = Math.toIntExact(diseaseMapper.selectCount(highIncidenceWrapper));
+
+        stat.setCriticalCount(criticalCount);
+        stat.setMediumCount(mediumCount);
+        stat.setLightCount(lightCount);
+        stat.setStatutoryCriticalCount(statutoryCriticalCount);
+        stat.setStatutoryLightCount(statutoryLightCount);
+        stat.setHighIncidenceCount(highIncidenceCount);
+
+        return stat;
+    }
+
+    /**
+     * 将疾病实体+产品疾病关联转换为疾病VO
+     */
+    private DiseaseVO convertToDiseaseVO(Disease disease, ProductDisease pd) {
+        DiseaseVO vo = new DiseaseVO();
+        BeanUtils.copyProperties(disease, vo);
+        // 产品级别的配置优先
+        if (pd.getDiseaseType() != null) {
+            vo.setDiseaseType(pd.getDiseaseType());
+        }
+        vo.setPayoutRatio(pd.getPayoutRatio());
+        vo.setPayoutTimes(pd.getPayoutTimes());
+        vo.setIntervalDays(pd.getIntervalDays());
+        vo.setWaitingPeriodDays(pd.getWaitingPeriodDays());
+        vo.setIsBasic(pd.getIsBasic());
+        vo.setResponsibilityCode(pd.getResponsibilityCode());
+        vo.setSortOrder(pd.getSortOrder());
+        return vo;
+    }
+
+    /**
+     * 将疾病实体转换为疾病VO（默认配置）
+     */
+    private DiseaseVO convertToDiseaseVO(Disease disease) {
+        DiseaseVO vo = new DiseaseVO();
+        BeanUtils.copyProperties(disease, vo);
+        // 默认赔付比例
+        if (disease.getDiseaseType() != null) {
+            switch (disease.getDiseaseType()) {
+                case 1:
+                    vo.setPayoutRatio(100);
+                    vo.setPayoutTimes(1);
+                    break;
+                case 2:
+                    vo.setPayoutRatio(50);
+                    vo.setPayoutTimes(1);
+                    break;
+                case 3:
+                    vo.setPayoutRatio(30);
+                    vo.setPayoutTimes(1);
+                    break;
+                default:
+                    break;
+            }
+        }
+        vo.setIsBasic(1);
+        return vo;
+    }
+
+    @Override
+    public ProductBriefVO getProductBrief(Long productId) {
+        ProductBase product = productBaseMapper.selectById(productId);
+        if (product == null) {
+            throw new BusinessException("产品不存在");
+        }
+        InsuranceCompany company = insuranceCompanyMapper.selectById(product.getCompanyId());
+
+        ProductBriefVO vo = new ProductBriefVO();
+        vo.setProductId(product.getProductId());
+        vo.setProductName(product.getProductName());
+        vo.setProductCode(product.getProductCode());
+        vo.setProductType(product.getProductType());
+        vo.setSubType(product.getSubType());
+        vo.setCompanyId(product.getCompanyId());
+        vo.setCompanyName(company != null ? company.getCompanyName() : null);
+        vo.setCompanyLogo(company != null ? company.getLogoUrl() : null);
+        vo.setProductBrief(product.getProductBrief());
+        vo.setSuitableFor(product.getSuitableFor());
+        vo.setMinAge(product.getMinAge());
+        vo.setMaxAge(product.getMaxAge());
+        vo.setPaymentYears(product.getPaymentYears());
+        vo.setSaleStatus(product.getSaleStatus());
+
+        // 产品类型描述
+        switch (product.getProductType()) {
+            case 1:
+                vo.setProductTypeDesc("重疾险");
+                break;
+            case 2:
+                vo.setProductTypeDesc("增额终身寿险");
+                break;
+            case 3:
+                vo.setProductTypeDesc("年金险");
+                break;
+            default:
+                vo.setProductTypeDesc("未知类型");
+                break;
+        }
+
+        // 解析产品亮点JSON
+        if (product.getProductHighlights() != null && !product.getProductHighlights().isEmpty()) {
+            try {
+                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                List<String> highlights = mapper.readValue(
+                    product.getProductHighlights(),
+                    new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {}
+                );
+                vo.setProductHighlights(highlights);
+            } catch (Exception e) {
+                vo.setProductHighlights(new java.util.ArrayList<>());
+            }
+        } else {
+            vo.setProductHighlights(new java.util.ArrayList<>());
+        }
+
+        // 解析产品标签JSON
+        if (product.getProductTags() != null && !product.getProductTags().isEmpty()) {
+            try {
+                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                List<String> tags = mapper.readValue(
+                    product.getProductTags(),
+                    new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {}
+                );
+                vo.setProductTags(tags);
+            } catch (Exception e) {
+                vo.setProductTags(new java.util.ArrayList<>());
+            }
+        } else {
+            vo.setProductTags(new java.util.ArrayList<>());
+        }
+
+        vo.setCoverageSummary(product.getCoverageSummary());
+        vo.setRecommendationScore(product.getRecommendationScore());
+        vo.setBriefStatus(product.getBriefStatus());
+
+        // 如果简介为空，自动生成
+        if ((vo.getProductBrief() == null || vo.getProductBrief().isEmpty())
+                && productBriefGeneratorService != null) {
+            try {
+                ProductBriefVO generated = productBriefGeneratorService.generateProductBrief(productId);
+                if (generated != null) {
+                    // 使用生成的简介，但不覆盖已有非空字段
+                    if (vo.getProductBrief() == null || vo.getProductBrief().isEmpty()) {
+                        vo.setProductBrief(generated.getProductBrief());
+                    }
+                    if (vo.getProductHighlights() == null || vo.getProductHighlights().isEmpty()) {
+                        vo.setProductHighlights(generated.getProductHighlights());
+                    }
+                    if (vo.getSuitableFor() == null || vo.getSuitableFor().isEmpty()) {
+                        vo.setSuitableFor(generated.getSuitableFor());
+                    }
+                    if (vo.getProductTags() == null || vo.getProductTags().isEmpty()) {
+                        vo.setProductTags(generated.getProductTags());
+                    }
+                    if (vo.getCoverageSummary() == null || vo.getCoverageSummary().isEmpty()) {
+                        vo.setCoverageSummary(generated.getCoverageSummary());
+                    }
+                    if (vo.getRecommendationScore() == null) {
+                        vo.setRecommendationScore(generated.getRecommendationScore());
+                    }
+                    vo.setBriefStatus(1);
+
+                    // 异步保存生成结果
+                    new Thread(() -> {
+                        try {
+                            productBriefGeneratorService.generateAndSave(productId);
+                        } catch (Exception e) {
+                            // 忽略保存错误
+                        }
+                    }).start();
+                }
+            } catch (Exception e) {
+                log.warn("自动生成产品简介失败: productId={}", productId, e);
+            }
+        }
+
         return vo;
     }
 }

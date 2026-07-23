@@ -21,6 +21,9 @@ public class ResponsibilityItemVO implements Serializable {
     /** 责任项名称 */
     private String itemName;
 
+    /** 责任项描述 */
+    private String description;
+
     /** 是否支持 */
     private Integer isSupported;
 

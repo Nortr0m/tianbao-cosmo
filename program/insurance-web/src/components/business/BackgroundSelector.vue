@@ -283,8 +283,31 @@ function goToVip() {
 </script>
 
 <style scoped>
+.background-selector-dialog :deep(.el-dialog) {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-neon-purple);
+}
+
+.background-selector-dialog :deep(.el-dialog__header) {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 16px;
+}
+
+.background-selector-dialog :deep(.el-dialog__title) {
+  color: var(--text-bright) !important;
+  font-weight: 700;
+}
+
 .background-selector-dialog :deep(.el-dialog__body) {
-  padding-top: 10px;
+  padding-top: 20px;
+  color: var(--text-primary);
+}
+
+.background-selector-dialog :deep(.el-dialog__footer) {
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
 }
 
 .preview-section {
@@ -294,15 +317,15 @@ function goToVip() {
 .preview-image {
   width: 100%;
   height: 160px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   background-size: cover;
   background-position: center;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  border: 2px solid #ebeef5;
-  transition: all 0.3s;
+  border: 2px solid var(--border-color);
+  transition: all var(--transition-normal);
 }
 
 .preview-placeholder {
@@ -310,7 +333,7 @@ function goToVip() {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: #909399;
+  color: var(--text-muted);
 }
 
 .preview-info {
@@ -353,20 +376,24 @@ function goToVip() {
   border-radius: 20px;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.3s;
-  background: #f5f7fa;
-  color: #606266;
+  transition: all var(--transition-fast);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
   user-select: none;
+  border: 1px solid var(--border-color);
 }
 
 .tab-item:hover {
-  background: #ecf5ff;
-  color: #409eff;
+  background: var(--bg-card-hover);
+  color: var(--accent-purple);
+  border-color: var(--accent-purple);
 }
 
 .tab-item.active {
-  background: #409eff;
+  background: var(--gradient-primary);
   color: #fff;
+  border-color: transparent;
+  box-shadow: var(--shadow-neon-purple);
 }
 
 .search-input {
@@ -384,20 +411,22 @@ function goToVip() {
 
 .bg-item {
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  border: 2px solid transparent;
-  transition: all 0.3s;
+  border: 2px solid var(--border-color);
+  transition: all var(--transition-normal);
+  background: var(--bg-card);
 }
 
 .bg-item:hover {
-  border-color: #c6e2ff;
+  border-color: var(--accent-purple);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-neon-purple);
 }
 
 .bg-item.active {
-  border-color: #409eff;
-  box-shadow: 0 0 0 2px #409eff33;
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
 }
 
 .bg-item.locked {
@@ -407,7 +436,8 @@ function goToVip() {
 
 .bg-item.locked:hover {
   transform: none;
-  border-color: transparent;
+  border-color: var(--border-color);
+  box-shadow: none;
 }
 
 .bg-image-wrapper {
@@ -446,7 +476,7 @@ function goToVip() {
   padding: 8px;
   font-size: 13px;
   text-align: center;
-  color: #606266;
+  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

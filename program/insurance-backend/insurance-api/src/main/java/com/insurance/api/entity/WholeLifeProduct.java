@@ -58,4 +58,25 @@ public class WholeLifeProduct {
 
     /** 支持年龄列表（JSON数组） */
     private String supportAgeList;
+
+    /** 减保限制规则文字版 */
+    private String reductionRuleText;
+    /** 加保规则文字说明 */
+    private String addRuleText;
+    /** 第二投保人规则 */
+    private String secondApplicantRule;
+    /** 是否支持隔代投保 */
+    private Integer crossGeneration;
+    /** 是否支持信托对接 */
+    private Integer trustLinkage;
+    /** 最低保费要求 */
+    private BigDecimal minPremium;
+    /** 最低保额要求 */
+    private BigDecimal minSumAssured;
+    /** 健康分级规则 */
+    private String healthClass;
+    /** 典型费率示例 */
+    private String typicalRateExample;
+    /** 身故赔付规则(K值说明) */
+    private String deathPayoutRule;
 }

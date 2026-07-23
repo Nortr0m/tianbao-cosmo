@@ -1,0 +1,14 @@
+{
+  "navigationBarTitleText": "产品详情",
+  "backgroundColor": "#F7FAFC",
+  "usingComponents": {
+    "van-skeleton": "@vant/weapp/skeleton/index",
+    "van-image": "@vant/weapp/image/index",
+    "van-tag": "@vant/weapp/tag/index",
+    "van-tabs": "@vant/weapp/tabs/index",
+    "van-tab": "@vant/weapp/tab/index",
+    "van-icon": "@vant/weapp/icon/index",
+    "van-divider": "@vant/weapp/divider/index",
+    "van-button": "@vant/weapp/button/index"
+  }
+}

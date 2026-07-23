@@ -28,11 +28,14 @@
       <!-- Step 2: 基础信息 -->
       <div v-if="currentStep === 1" class="step-content">
         <h3>填写基础信息</h3>
-        <el-form :model="form" label-width="120px">
-          <el-form-item label="产品名称" required>
+        <el-form ref="baseFormRef" :model="form" :rules="baseRules" label-width="120px">
+          <el-form-item label="产品名称" prop="productName">
             <el-input v-model="form.productName" placeholder="请输入产品名称" />
           </el-form-item>
-          <el-form-item label="保险公司" required>
+          <el-form-item label="产品编码" prop="productCode">
+            <el-input v-model="form.productCode" placeholder="请输入产品编码（如：XYZL-2024-001）" />
+          </el-form-item>
+          <el-form-item label="保险公司" prop="companyId">
             <el-select v-model="form.companyId" placeholder="请选择保险公司" style="width: 100%">
               <el-option
                 v-for="c in companyList"
@@ -67,45 +70,66 @@
       <!-- Step 3: 上传资料 -->
       <div v-if="currentStep === 2" class="step-content">
         <h3>上传产品资料</h3>
+        <p class="upload-tip">资料上传为可选步骤，您也可以在产品创建后通过编辑页面上传。费率表将在产品创建后单独导入。</p>
         <el-form label-width="120px">
           <el-form-item label="保险条款">
             <el-upload
-              action="/api/v1/upload"
+              ref="termsUploadRef"
+              :auto-upload="false"
               :limit="1"
               accept=".pdf"
-              @success="(r: any) => form.hasTerms = true"
+              :on-change="(f: any) => onFileChange(f, 'terms')"
+              :on-remove="() => onFileRemove('terms')"
             >
-              <el-button type="primary">上传PDF</el-button>
+              <el-button type="primary">选择PDF</el-button>
+              <template #tip>
+                <div class="upload-item-tip" v-if="uploadFiles.terms.name">{{ uploadFiles.terms.name }}</div>
+              </template>
             </el-upload>
           </el-form-item>
           <el-form-item label="产品说明书">
             <el-upload
-              action="/api/v1/upload"
+              ref="brochureUploadRef"
+              :auto-upload="false"
               :limit="1"
               accept=".pdf"
-              @success="(r: any) => form.hasBrochure = true"
+              :on-change="(f: any) => onFileChange(f, 'brochure')"
+              :on-remove="() => onFileRemove('brochure')"
             >
-              <el-button type="primary">上传PDF</el-button>
+              <el-button type="primary">选择PDF</el-button>
+              <template #tip>
+                <div class="upload-item-tip" v-if="uploadFiles.brochure.name">{{ uploadFiles.brochure.name }}</div>
+              </template>
             </el-upload>
           </el-form-item>
           <el-form-item label="投保规则">
             <el-upload
-              action="/api/v1/upload"
+              ref="rulesUploadRef"
+              :auto-upload="false"
               :limit="1"
               accept=".pdf"
-              @success="(r: any) => form.hasRules = true"
+              :on-change="(f: any) => onFileChange(f, 'rules')"
+              :on-remove="() => onFileRemove('rules')"
             >
-              <el-button type="primary">上传PDF</el-button>
+              <el-button type="primary">选择PDF</el-button>
+              <template #tip>
+                <div class="upload-item-tip" v-if="uploadFiles.rules.name">{{ uploadFiles.rules.name }}</div>
+              </template>
             </el-upload>
           </el-form-item>
           <el-form-item label="费率表">
             <el-upload
-              action="/api/v1/upload"
+              ref="rateUploadRef"
+              :auto-upload="false"
               :limit="1"
               accept=".xlsx,.xls"
-              @success="(r: any) => form.hasRateTable = true"
+              :on-change="(f: any) => onFileChange(f, 'rateTable')"
+              :on-remove="() => onFileRemove('rateTable')"
             >
-              <el-button type="primary">上传Excel</el-button>
+              <el-button type="primary">选择Excel</el-button>
+              <template #tip>
+                <div class="upload-item-tip" v-if="uploadFiles.rateTable.name">{{ uploadFiles.rateTable.name }}</div>
+              </template>
             </el-upload>
           </el-form-item>
         </el-form>
@@ -176,21 +200,64 @@
         <h3>确认产品信息</h3>
         <el-descriptions :column="2" border>
           <el-descriptions-item label="产品名称">{{ form.productName }}</el-descriptions-item>
-          <el-descriptions-item label="产品类型">{{ form.productType === 1 ? '重疾险' : form.productType === 2 ? '增额终身寿险' : '年金险' }}</el-descriptions-item>
+          <el-descriptions-item label="产品编码">{{ form.productCode || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="产品类型">{{ productTypeLabel }}</el-descriptions-item>
           <el-descriptions-item label="保险公司">{{ getCompanyName(form.companyId) }}</el-descriptions-item>
-          <el-descriptions-item label="子类型">{{ form.subType === 1 ? '分红型' : form.subType === 2 ? '固收型' : '传统型' }}</el-descriptions-item>
+          <el-descriptions-item label="子类型">{{ subTypeLabel }}</el-descriptions-item>
           <el-descriptions-item label="投保年龄">{{ form.minAge }}-{{ form.maxAge }}岁</el-descriptions-item>
-          <el-descriptions-item label="资料完整度">
-            <el-tag :type="docCompletePercent === 100 ? 'success' : 'warning'">{{ docCompletePercent }}%</el-tag>
+        </el-descriptions>
+
+        <!-- 子类配置摘要 -->
+        <h4 class="sub-summary-title">子类配置</h4>
+        <el-descriptions :column="2" border v-if="form.productType === 2">
+          <el-descriptions-item label="减保规则类型">{{ wholeLifeRuleLabel }}</el-descriptions-item>
+          <el-descriptions-item label="保单贷款比例">{{ form.wholeLife.loanRatio }}%</el-descriptions-item>
+          <el-descriptions-item label="保额递增比例">{{ form.wholeLife.increaseRate }}%</el-descriptions-item>
+        </el-descriptions>
+        <el-descriptions :column="2" border v-if="form.productType === 3">
+          <el-descriptions-item label="支持月领">{{ form.annuity.supportMonthly ? '是' : '否' }}</el-descriptions-item>
+          <el-descriptions-item label="月领系数">{{ form.annuity.monthlyCoefficient }}</el-descriptions-item>
+          <el-descriptions-item label="保证领取期">{{ form.annuity.guaranteePeriod || '-' }}</el-descriptions-item>
+        </el-descriptions>
+        <el-descriptions :column="2" border v-if="form.productType === 1">
+          <el-descriptions-item label="等待期">{{ form.critical.waitingPeriod }}天</el-descriptions-item>
+          <el-descriptions-item label="重疾种类数">{{ form.critical.criticalCount }}种</el-descriptions-item>
+          <el-descriptions-item label="中症种类数">{{ form.critical.mediumCount }}种</el-descriptions-item>
+          <el-descriptions-item label="轻症种类数">{{ form.critical.lightCount }}种</el-descriptions-item>
+        </el-descriptions>
+
+        <!-- 资料上传摘要 -->
+        <h4 class="sub-summary-title">已上传资料</h4>
+        <el-descriptions :column="2" border>
+          <el-descriptions-item label="保险条款">
+            <el-tag :type="uploadFiles.terms.name ? 'success' : 'info'" size="small">
+              {{ uploadFiles.terms.name || '未上传' }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="产品说明书">
+            <el-tag :type="uploadFiles.brochure.name ? 'success' : 'info'" size="small">
+              {{ uploadFiles.brochure.name || '未上传' }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="投保规则">
+            <el-tag :type="uploadFiles.rules.name ? 'success' : 'info'" size="small">
+              {{ uploadFiles.rules.name || '未上传' }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="费率表">
+            <el-tag :type="uploadFiles.rateTable.name ? 'success' : 'info'" size="small">
+              {{ uploadFiles.rateTable.name || '未上传' }}
+            </el-tag>
           </el-descriptions-item>
         </el-descriptions>
+
         <p class="tip">提交后产品状态为「待人工确认」，管理员确认后自动上架。</p>
       </div>
 
       <div class="step-actions">
         <el-button v-if="currentStep > 0" @click="currentStep--">上一步</el-button>
-        <el-button v-if="currentStep < 4" type="primary" @click="currentStep++">下一步</el-button>
-        <el-button v-if="currentStep === 4" type="success" @click="handleSubmit">提交</el-button>
+        <el-button v-if="currentStep < 4" type="primary" @click="goNext" :loading="false">下一步</el-button>
+        <el-button v-if="currentStep === 4" type="success" @click="handleSubmit" :loading="submitting">提交</el-button>
       </div>
     </el-card>
   </div>
@@ -199,27 +266,29 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import type { UploadFile } from 'element-plus'
 import { getCompanyList } from '@/api/company'
 import type { Company } from '@/api/company'
+import { createProduct, importRates, importAnnuityRates } from '@/api/product'
 
 const router = useRouter()
 const currentStep = ref(0)
+const submitting = ref(false)
+const baseFormRef = ref<FormInstance>()
 const companyList = ref<Company[]>([])
+
+type UploadFileInfo = { name: string; raw: File | null }
 
 const form = reactive({
   productType: 2 as 1 | 2 | 3,
   productName: '',
+  productCode: '',
   companyId: undefined as number | undefined,
   subType: 2 as 1 | 2 | 3,
   minAge: 0,
   maxAge: 65,
   paymentYears: '[]',
-  hasTerms: false,
-  hasBrochure: false,
-  hasRules: false,
-  hasRateTable: false,
-  hasCashValue: false,
   wholeLife: {
     reductionRuleType: 1,
     loanRatio: 80,
@@ -238,14 +307,32 @@ const form = reactive({
   }
 })
 
-const docCompletePercent = computed(() => {
-  let count = 0
-  if (form.hasTerms) count++
-  if (form.hasBrochure) count++
-  if (form.hasRules) count++
-  if (form.hasRateTable) count++
-  if (form.hasCashValue) count++
-  return Math.round((count / 5) * 100)
+const uploadFiles = reactive<Record<string, UploadFileInfo>>({
+  terms: { name: '', raw: null },
+  brochure: { name: '', raw: null },
+  rules: { name: '', raw: null },
+  rateTable: { name: '', raw: null }
+})
+
+const baseRules: FormRules = {
+  productName: [{ required: true, message: '请输入产品名称', trigger: 'blur' }],
+  productCode: [{ required: true, message: '请输入产品编码', trigger: 'blur' }],
+  companyId: [{ required: true, message: '请选择保险公司', trigger: 'change' }]
+}
+
+const productTypeLabel = computed(() => {
+  const map: Record<number, string> = { 1: '重疾险', 2: '增额终身寿险', 3: '年金险' }
+  return map[form.productType] || '未知'
+})
+
+const subTypeLabel = computed(() => {
+  const map: Record<number, string> = { 1: '分红型', 2: '固收型', 3: '传统型' }
+  return map[form.subType] || '-'
+})
+
+const wholeLifeRuleLabel = computed(() => {
+  const map: Record<number, string> = { 1: '20%保额', 2: '20%保费', 3: '无限制' }
+  return map[form.wholeLife.reductionRuleType] || '-'
 })
 
 function getCompanyName(id?: number) {
@@ -254,10 +341,88 @@ function getCompanyName(id?: number) {
   return c ? c.companyName : '-'
 }
 
+function onFileChange(file: UploadFile, key: string) {
+  uploadFiles[key] = { name: file.name, raw: file.raw as File }
+}
+
+function onFileRemove(key: string) {
+  uploadFiles[key] = { name: '', raw: null }
+}
+
+async function validateStep(step: number): Promise<boolean> {
+  if (step === 0) {
+    if (!form.productType) {
+      ElMessage.warning('请选择产品类型')
+      return false
+    }
+    return true
+  }
+  if (step === 1) {
+    if (!baseFormRef.value) return false
+    try {
+      await baseFormRef.value.validate()
+      return true
+    } catch {
+      return false
+    }
+  }
+  // Step 2 (上传) 和 Step 3 (子类配置) 无强制校验
+  return true
+}
+
+async function goNext() {
+  const valid = await validateStep(currentStep.value)
+  if (valid) {
+    currentStep.value++
+  }
+}
+
 async function handleSubmit() {
-  // TODO: 调用后端创建产品接口
-  ElMessage.success('产品录入成功，状态：待人工确认')
-  router.push('/product/whole-life')
+  submitting.value = true
+  try {
+    // 1. 创建产品
+    const productId = await createProduct({
+      productName: form.productName,
+      productCode: form.productCode,
+      companyId: form.companyId!,
+      productType: form.productType,
+      subType: form.subType,
+      minAge: form.minAge,
+      maxAge: form.maxAge,
+      paymentYears: form.paymentYears,
+      saleStatus: 0,
+      systemStatus: 0,
+      // 增额终身寿险子类字段
+      ...(form.productType === 2 ? {
+        reductionRuleType: form.wholeLife.reductionRuleType,
+        loanRatio: form.wholeLife.loanRatio,
+        increaseRate: form.wholeLife.increaseRate
+      } : {})
+    })
+
+    // 2. 导入费率表（如果有上传且产品类型为增额寿或年金险）
+    if (uploadFiles.rateTable.raw) {
+      try {
+        if (form.productType === 2) {
+          await importRates(productId, uploadFiles.rateTable.raw)
+        } else if (form.productType === 3) {
+          await importAnnuityRates(productId, uploadFiles.rateTable.raw)
+        }
+        ElMessage.success(`费率表导入成功，共 ${uploadFiles.rateTable.name}`)
+      } catch (e: any) {
+        ElMessage.warning(`费率表导入失败：${e.message || '未知错误'}，请稍后在产品编辑页重新导入`)
+      }
+    }
+
+    ElMessage.success('产品录入成功，状态：待人工确认')
+    // 跳转到对应产品列表页
+    const routeMap: Record<number, string> = { 1: '/product/critical-illness', 2: '/product/whole-life', 3: '/product/annuity' }
+    router.push(routeMap[form.productType] || '/product/whole-life')
+  } catch (e: any) {
+    ElMessage.error(`提交失败：${e.message || '未知错误'}`)
+  } finally {
+    submitting.value = false
+  }
 }
 
 async function loadCompanies() {
@@ -310,5 +475,20 @@ onMounted(() => {
   margin-top: 16px;
   color: var(--text-muted);
   font-size: 13px;
+}
+.upload-tip {
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.upload-item-tip {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.sub-summary-title {
+  margin: 20px 0 12px;
+  font-size: 15px;
+  color: var(--text-primary);
 }
 </style>

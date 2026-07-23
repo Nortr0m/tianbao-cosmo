@@ -6,12 +6,22 @@ import com.insurance.api.company.dto.CompanyQueryDTO;
 import com.insurance.api.company.service.CompanyService;
 import com.insurance.api.company.vo.CompanyCosmosVO;
 import com.insurance.api.company.vo.CompanyRatingVO;
+import com.insurance.api.company.vo.CompanyRelationInfoVO;
 import com.insurance.api.company.vo.CompanyVO;
+import com.insurance.api.company.vo.ShareholderInfoVO;
 import com.insurance.api.entity.CompanyRatingHistory;
+import com.insurance.api.entity.CompanyRelation;
+import com.insurance.api.entity.CompanyShareholder;
 import com.insurance.api.entity.InsuranceCompany;
+import com.insurance.api.entity.Shareholder;
 import com.insurance.api.mapper.CompanyRatingHistoryMapper;
+import com.insurance.api.mapper.CompanyRelationMapper;
+import com.insurance.api.mapper.CompanyShareholderMapper;
 import com.insurance.api.mapper.InsuranceCompanyMapper;
+import com.insurance.api.mapper.ShareholderMapper;
+import com.insurance.common.enums.CompanyRelationTypeEnum;
 import com.insurance.common.enums.CompanyTypeEnum;
+import com.insurance.common.enums.ShareholderTypeEnum;
 import com.insurance.common.exception.BusinessException;
 import com.insurance.common.result.PageResult;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +30,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +46,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     private final InsuranceCompanyMapper insuranceCompanyMapper;
     private final CompanyRatingHistoryMapper companyRatingHistoryMapper;
+    private final ShareholderMapper shareholderMapper;
+    private final CompanyShareholderMapper companyShareholderMapper;
+    private final CompanyRelationMapper companyRelationMapper;
 
     @Override
     public PageResult<CompanyVO> listCompanies(CompanyQueryDTO queryDTO) {
@@ -110,13 +125,114 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public List<CompanyCosmosVO> getCosmosData() {
         List<CompanyCosmosVO> list = insuranceCompanyMapper.selectCosmosData();
-        // 处理productTypes字符串转列表
+        // 处理productTypes字符串转列表，并填充股东、关联公司和热门产品数据
         for (CompanyCosmosVO vo : list) {
             if (vo.getProductTypes() == null) {
                 vo.setProductTypes(new java.util.ArrayList<>());
             }
+            // 填充热门产品名称（按创建时间倒序取前6款）
+            List<String> productNames = insuranceCompanyMapper.selectProductNamesByCompanyId(vo.getCompanyId(), 6);
+            vo.setProductNames(productNames != null ? productNames : new java.util.ArrayList<>());
+            // 填充股东数据
+            vo.setShareholders(getCompanyShareholders(vo.getCompanyId()));
+            // 填充关联公司数据
+            vo.setRelations(getCompanyRelations(vo.getCompanyId()));
         }
         return list;
+    }
+
+    @Override
+    public List<ShareholderInfoVO> getCompanyShareholders(Long companyId) {
+        InsuranceCompany company = insuranceCompanyMapper.selectById(companyId);
+        if (company == null) {
+            throw new BusinessException("保险公司不存在");
+        }
+
+        // 查询持股比例>=10%的股东关联关系，按持股比例降序
+        LambdaQueryWrapper<CompanyShareholder> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CompanyShareholder::getCompanyId, companyId)
+                .ge(CompanyShareholder::getShareRatio, new BigDecimal("10"))
+                .orderByDesc(CompanyShareholder::getShareRatio);
+        List<CompanyShareholder> relations = companyShareholderMapper.selectList(wrapper);
+
+        if (relations.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+
+        // 批量查询股东信息
+        List<Long> shareholderIds = relations.stream()
+                .map(CompanyShareholder::getShareholderId)
+                .collect(Collectors.toList());
+        List<Shareholder> shareholders = shareholderMapper.selectBatchIds(shareholderIds);
+        Map<Long, Shareholder> shareholderMap = shareholders.stream()
+                .collect(Collectors.toMap(Shareholder::getShareholderId, s -> s));
+
+        // 组装VO
+        return relations.stream().map(relation -> {
+            ShareholderInfoVO vo = new ShareholderInfoVO();
+            Shareholder shareholder = shareholderMap.get(relation.getShareholderId());
+            if (shareholder != null) {
+                BeanUtils.copyProperties(shareholder, vo);
+                ShareholderTypeEnum typeEnum = ShareholderTypeEnum.getByCode(shareholder.getShareholderType());
+                if (typeEnum != null) {
+                    vo.setShareholderTypeDesc(typeEnum.getDesc());
+                }
+            }
+            vo.setShareRatio(relation.getShareRatio());
+            vo.setShareAmount(relation.getShareAmount());
+            vo.setShareType(relation.getShareType());
+            vo.setIsControlling(relation.getIsControlling());
+            vo.setRanking(relation.getRanking());
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CompanyRelationInfoVO> getCompanyRelations(Long companyId) {
+        InsuranceCompany company = insuranceCompanyMapper.selectById(companyId);
+        if (company == null) {
+            throw new BusinessException("保险公司不存在");
+        }
+
+        // 查询该公司的所有关联关系
+        LambdaQueryWrapper<CompanyRelation> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CompanyRelation::getCompanyId, companyId)
+                .orderByAsc(CompanyRelation::getRelationType);
+        List<CompanyRelation> relations = companyRelationMapper.selectList(wrapper);
+
+        if (relations.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+
+        // 批量查询关联公司信息
+        List<Long> relatedCompanyIds = relations.stream()
+                .map(CompanyRelation::getRelatedCompanyId)
+                .collect(Collectors.toList());
+        List<InsuranceCompany> relatedCompanies = insuranceCompanyMapper.selectBatchIds(relatedCompanyIds);
+        Map<Long, InsuranceCompany> companyMap = relatedCompanies.stream()
+                .collect(Collectors.toMap(InsuranceCompany::getCompanyId, c -> c));
+
+        // 组装VO
+        return relations.stream().map(relation -> {
+            CompanyRelationInfoVO vo = new CompanyRelationInfoVO();
+            vo.setRelationId(relation.getId());
+            vo.setRelatedCompanyId(relation.getRelatedCompanyId());
+            InsuranceCompany relatedCompany = companyMap.get(relation.getRelatedCompanyId());
+            if (relatedCompany != null) {
+                vo.setRelatedCompanyName(relatedCompany.getCompanyName());
+                vo.setRelatedCompanyShortName(relatedCompany.getCompanyShortName());
+                vo.setRelatedCompanyLogo(relatedCompany.getLogoUrl());
+            }
+            vo.setRelationType(relation.getRelationType());
+            CompanyRelationTypeEnum typeEnum = CompanyRelationTypeEnum.getByCode(relation.getRelationType());
+            if (typeEnum != null) {
+                vo.setRelationTypeDesc(typeEnum.getDesc());
+            }
+            vo.setRelationName(relation.getRelationName());
+            vo.setShareRatio(relation.getShareRatio());
+            vo.setDescription(relation.getDescription());
+            return vo;
+        }).collect(Collectors.toList());
     }
 
     private CompanyVO convertToVO(InsuranceCompany company) {

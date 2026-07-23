@@ -27,7 +27,6 @@
         <el-form-item label="销售状态">
           <el-select v-model="queryForm.saleStatus" placeholder="全部" clearable style="width: 120px">
             <el-option label="在售" :value="1" />
-            <el-option label="预售中" :value="2" />
             <el-option label="停售" :value="0" />
           </el-select>
         </el-form-item>
@@ -55,8 +54,8 @@
         :data="tableData"
         :loading="loading"
         :total="total"
-        v-model:page="queryForm.page"
-        v-model:size="queryForm.size"
+        v-model:page="queryForm.pageNum"
+        v-model:size="queryForm.pageSize"
         @page-change="fetchData"
       >
         <template #toolbar-left>
@@ -88,8 +87,8 @@
         </el-table-column>
         <el-table-column label="销售状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.saleStatus === 1 ? 'success' : row.saleStatus === 2 ? 'warning' : 'info'" size="small">
-              {{ row.saleStatus === 1 ? '在售' : row.saleStatus === 2 ? '预售中' : '停售' }}
+            <el-tag :type="row.saleStatus === 1 ? 'success' : 'info'" size="small">
+              {{ row.saleStatus === 1 ? '在售' : '已停售' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -166,7 +165,6 @@
           <el-form-item label="销售状态" prop="saleStatus">
             <el-radio-group v-model="editForm.saleStatus">
               <el-radio :label="1">在售</el-radio>
-              <el-radio :label="2">预售中</el-radio>
               <el-radio :label="0">停售</el-radio>
             </el-radio-group>
           </el-form-item>
@@ -245,8 +243,8 @@ const editRules = {
 }
 
 const queryForm = reactive<ProductQuery>({
-  page: 1,
-  size: 10,
+  pageNum: 1,
+  pageSize: 10,
   keyword: '',
   companyId: undefined,
   saleStatus: undefined,
@@ -269,7 +267,7 @@ async function fetchData() {
 }
 
 function handleSearch() {
-  queryForm.page = 1
+  queryForm.pageNum = 1
   fetchData()
 }
 
@@ -279,7 +277,7 @@ function handleReset() {
   queryForm.saleStatus = undefined
   queryForm.systemStatus = undefined
   queryForm.maintenanceStatus = undefined
-  queryForm.page = 1
+  queryForm.pageNum = 1
   fetchData()
 }
 

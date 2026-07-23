@@ -36,4 +36,10 @@ public class AnnuityProjectionDTO implements Serializable {
 
     /** 起始领取年龄 */
     private Integer startAge;
+
+    /** 保证领取期（年），如20年保证领取 */
+    private Integer guaranteePeriod;
+
+    /** 分红实现率（0-200，默认100），仅分红型使用 */
+    private Integer dividendRealizationRate;
 }

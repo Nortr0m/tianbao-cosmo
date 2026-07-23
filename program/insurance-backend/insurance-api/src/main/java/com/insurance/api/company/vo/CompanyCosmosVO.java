@@ -34,4 +34,13 @@ public class CompanyCosmosVO implements Serializable {
 
     /** 产品类型分布 */
     private List<String> productTypes;
+
+    /** 热门产品名称列表（按创建时间倒序取前6款） */
+    private List<String> productNames;
+
+    /** 股东列表（持股比例≥10%） */
+    private List<ShareholderInfoVO> shareholders;
+
+    /** 关联公司列表 */
+    private List<CompanyRelationInfoVO> relations;
 }

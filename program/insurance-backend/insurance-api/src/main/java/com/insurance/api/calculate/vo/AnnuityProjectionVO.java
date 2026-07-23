@@ -46,4 +46,19 @@ public class AnnuityProjectionVO implements Serializable {
 
     /** 年度收益列表 */
     private List<AnnuityYearlyVO> yearlyProjections;
+
+    /** 产品子类型（1=分红型，2=万能型，其他=固收型） */
+    private Integer subType;
+
+    /** 保证部分年领取金额（分红型产品） */
+    private BigDecimal annualPayoutGuaranteed;
+
+    /** 分红部分年领取金额（分红型产品） */
+    private BigDecimal annualPayoutDividend;
+
+    /** 月领取金额（保证部分，分红型产品） */
+    private BigDecimal monthlyPayoutGuaranteed;
+
+    /** 月领取金额（分红部分，分红型产品） */
+    private BigDecimal monthlyPayoutDividend;
 }

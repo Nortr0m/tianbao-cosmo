@@ -106,6 +106,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '风险评级历史', parentTitle: '保险公司管理' }
       },
       {
+        path: '/card-template/category',
+        name: 'CardCategory',
+        component: () => import('@/views/cardTemplate/CategoryList.vue'),
+        meta: { title: '分类管理', parentTitle: '卡片模板管理' }
+      },
+      {
         path: '/card-template/list',
         name: 'TemplateList',
         component: () => import('@/views/cardTemplate/TemplateList.vue'),

@@ -112,17 +112,17 @@
 
                 <el-form-item label="密度">
                   <el-radio-group v-model="config.watermarkDensity">
-                    <el-radio-button label="sparse">稀疏</el-radio-button>
-                    <el-radio-button label="medium">适中</el-radio-button>
-                    <el-radio-button label="dense">密集</el-radio-button>
+                    <el-radio-button value="sparse">稀疏</el-radio-button>
+                    <el-radio-button value="medium">适中</el-radio-button>
+                    <el-radio-button value="dense">密集</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
 
                 <el-form-item label="角度">
                   <el-radio-group v-model="config.watermarkAngle">
-                    <el-radio-button :label="30">30°</el-radio-button>
-                    <el-radio-button :label="45">45°</el-radio-button>
-                    <el-radio-button :label="60">60°</el-radio-button>
+                    <el-radio-button :value="30">30°</el-radio-button>
+                    <el-radio-button :value="45">45°</el-radio-button>
+                    <el-radio-button :value="60">60°</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
 
@@ -138,9 +138,9 @@
 
                 <el-form-item label="颜色">
                   <el-radio-group v-model="config.watermarkColor">
-                    <el-radio-button label="black">黑色</el-radio-button>
-                    <el-radio-button label="darkgray">深灰</el-radio-button>
-                    <el-radio-button label="white">白色</el-radio-button>
+                    <el-radio-button value="black">黑色</el-radio-button>
+                    <el-radio-button value="darkgray">深灰</el-radio-button>
+                    <el-radio-button value="white">白色</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
               </template>
@@ -414,15 +414,52 @@ async function handleDownload() {
 </script>
 
 <style scoped>
+.card-generator-dialog :deep(.el-dialog) {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-neon-purple);
+}
+
+.card-generator-dialog :deep(.el-dialog__header) {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 16px;
+}
+
+.card-generator-dialog :deep(.el-dialog__title) {
+  color: var(--text-bright) !important;
+  font-weight: 700;
+}
+
 .card-generator-dialog :deep(.el-dialog__body) {
-  padding-top: 10px;
+  padding-top: 20px;
+  color: var(--text-primary);
+}
+
+.card-generator-dialog :deep(.el-dialog__footer) {
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
 }
 
 .section-title {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 16px;
-  color: #303133;
+  color: var(--text-bright);
+  position: relative;
+  padding-left: 12px;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--gradient-main);
 }
 
 .config-area {
@@ -434,15 +471,17 @@ async function handleDownload() {
 .bg-preview {
   width: 100%;
   height: 120px;
-  border-radius: 8px;
-  border: 2px dashed #dcdfe6;
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--border-color);
   cursor: pointer;
   overflow: hidden;
-  transition: all 0.3s;
+  transition: all var(--transition-normal);
+  background: var(--bg-secondary);
 }
 
 .bg-preview:hover {
-  border-color: #409eff;
+  border-color: var(--accent-purple);
+  box-shadow: var(--shadow-neon-purple);
 }
 
 .bg-preview img {
@@ -459,7 +498,12 @@ async function handleDownload() {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: #909399;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.bg-preview:hover .bg-placeholder {
+  color: var(--accent-purple);
 }
 
 .data-fields {
@@ -487,7 +531,7 @@ async function handleDownload() {
   gap: 12px;
   margin-top: 24px;
   padding-top: 16px;
-  border-top: 1px solid #ebeef5;
+  border-top: 1px solid var(--border-color);
 }
 
 .action-buttons .el-button {
@@ -503,8 +547,9 @@ async function handleDownload() {
 .preview-container {
   flex: 1;
   min-height: 400px;
-  background: #f5f7fa;
-  border-radius: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -524,8 +569,8 @@ async function handleDownload() {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .progress-bar {

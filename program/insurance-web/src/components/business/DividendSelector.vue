@@ -69,6 +69,7 @@ function selectRate(rate: number) {
   flex-direction: column;
   gap: 16px;
   padding: 8px 0;
+  color: var(--text-primary);
 }
 
 .preset-buttons {
@@ -85,13 +86,13 @@ function selectRate(rate: number) {
 
 .label {
   font-size: 14px;
-  color: #606266;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
 .unit {
   font-size: 14px;
-  color: #606266;
+  color: var(--text-muted);
 }
 
 .rate-info {
@@ -102,6 +103,6 @@ function selectRate(rate: number) {
 
 .hint {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-muted);
 }
 </style>

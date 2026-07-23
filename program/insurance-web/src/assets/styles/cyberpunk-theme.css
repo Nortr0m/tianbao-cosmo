@@ -4,55 +4,64 @@
    ============================================ */
 
 :root {
-  /* 天保星君 - 赛博仙侠主题 */
+  /* 天保星君 - 赛博仙侠主题 v2.0 */
+  /* 深紫靛蓝主色调 + 翠绿成功色 + 深灰蓝背景 */
 
   /* === 背景色 - 深邃星空 === */
-  --bg-primary: #070714;
-  --bg-secondary: #0d0d1f;
-  --bg-card: #13132b;
-  --bg-card-hover: #1a1a3d;
-  --bg-input: #0f0f28;
-  --bg-overlay: rgba(7, 7, 20, 0.88);
+  --bg-primary: #0f172a;        /* 主背景 - 深灰蓝 */
+  --bg-secondary: #1a1a2e;      /* 次级背景 - 深紫蓝 */
+  --bg-card: #1e1e3a;           /* 卡片背景 */
+  --bg-card-hover: #252550;     /* 卡片悬停背景 */
+  --bg-input: #16162e;          /* 输入框背景 */
+  --bg-overlay: rgba(15, 23, 42, 0.92);
 
   /* === 文字色 - 星光银白 === */
-  --text-primary: #e8e8ff;
-  --text-secondary: #a0a0cc;
-  --text-muted: #606088;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
   --text-bright: #ffffff;
 
   /* === 强调色 - 霓虹星芒 === */
-  --accent-purple: #c855f0;    /* 紫微星 - 主品牌色 */
-  --accent-cyan: #00f0ff;      /* 天狼星 - 辅助色 */
-  --accent-orange: #ffaa00;    /* 荧惑星 - 警示/价格 */
-  --accent-red: #ff4466;       /* 破军星 - 错误/热门 */
-  --accent-green: #00ffaa;     /* 岁星 - 成功/在线 */
-  --accent-gold: #ffd700;      /* 金星 - VIP/尊贵 */
-  --accent-amber: #ffb300;
-  --accent-magenta: #ff00ff;
+  --accent-purple: #8b5cf6;     /* 主品牌色 - 靛蓝紫 */
+  --accent-primary: #6366f1;    /* 主色调 - 深靛蓝 */
+  --accent-cyan: #06b6d4;       /* 辅助色 - 青色 */
+  --accent-orange: #f59e0b;     /* 警示色 - 琥珀橙 */
+  --accent-red: #ef4444;        /* 危险色 - 红色 */
+  --accent-green: #10b981;      /* 成功色 - 翠绿色 */
+  --accent-gold: #fbbf24;       /* VIP/尊贵 - 金色 */
+  --accent-amber: #f59e0b;
+  --accent-magenta: #ec4899;
+  --accent-blue: #3b82f6;       /* 信息蓝 */
 
   /* === 边框 - 星轨流光 === */
-  --border-color: #1e1e4a;
-  --border-glow: rgba(200, 85, 240, 0.25);
-  --border-glow-cyan: rgba(0, 240, 255, 0.25);
+  --border-color: #2d2d5a;
+  --border-glow: rgba(139, 92, 246, 0.3);
+  --border-glow-cyan: rgba(6, 182, 212, 0.3);
+  --border-glow-green: rgba(16, 185, 129, 0.3);
 
   /* === 霓虹阴影 - 星芒散射 === */
-  --shadow-neon-purple: 0 0 20px rgba(200, 85, 240, 0.3);
-  --shadow-neon-cyan: 0 0 20px rgba(0, 240, 255, 0.3);
-  --shadow-neon-orange: 0 0 20px rgba(255, 170, 0, 0.3);
-  --shadow-neon-red: 0 0 20px rgba(255, 68, 102, 0.3);
-  --shadow-neon-green: 0 0 20px rgba(0, 255, 170, 0.3);
-  --shadow-neon-gold: 0 0 20px rgba(255, 215, 0, 0.3);
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.5);
-  --shadow-card-hover: 0 8px 36px rgba(0, 0, 0, 0.7);
+  --shadow-neon-purple: 0 0 24px rgba(139, 92, 246, 0.35);
+  --shadow-neon-cyan: 0 0 24px rgba(6, 182, 212, 0.35);
+  --shadow-neon-orange: 0 0 24px rgba(245, 158, 11, 0.3);
+  --shadow-neon-red: 0 0 24px rgba(239, 68, 68, 0.3);
+  --shadow-neon-green: 0 0 24px rgba(16, 185, 129, 0.35);
+  --shadow-neon-gold: 0 0 24px rgba(251, 191, 36, 0.35);
+  --shadow-neon-primary: 0 0 24px rgba(99, 102, 241, 0.35);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.6);
 
   /* === 渐变 - 星河流转 === */
-  --gradient-main: linear-gradient(135deg, #c855f0, #00f0ff);
-  --gradient-warm: linear-gradient(135deg, #ffaa00, #ff4466);
-  --gradient-cool: linear-gradient(135deg, #00f0ff, #00ffaa);
-  --gradient-purple: linear-gradient(135deg, #c855f0, #ff00ff);
-  --gradient-gold: linear-gradient(135deg, #ffd700, #ffaa00);
-  --gradient-star: linear-gradient(180deg, #070714 0%, #1a1a4e 50%, #070714 100%);
-  --gradient-dark: linear-gradient(180deg, #070714 0%, #0d0d1f 100%);
+  --gradient-main: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+  --gradient-primary: linear-gradient(135deg, #6366f1, #8b5cf6);
+  --gradient-warm: linear-gradient(135deg, #f59e0b, #ef4444);
+  --gradient-cool: linear-gradient(135deg, #06b6d4, #10b981);
+  --gradient-purple: linear-gradient(135deg, #8b5cf6, #ec4899);
+  --gradient-gold: linear-gradient(135deg, #fbbf24, #f59e0b);
+  --gradient-gold-glow: linear-gradient(135deg, #fef3c7 0%, #fbbf24 50%, #f59e0b 100%);
+  --gradient-star: linear-gradient(180deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  --gradient-dark: linear-gradient(180deg, #0f172a 0%, #1a1a2e 100%);
+  --gradient-card: linear-gradient(145deg, rgba(30, 30, 58, 0.8) 0%, rgba(26, 26, 46, 0.9) 100%);
+  --gradient-hero: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 40%, rgba(6, 182, 212, 0.08) 100%);
 
   /* === 字体 - 仙侠科技感 === */
   --font-family: 'Orbitron', 'Rajdhani', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
@@ -125,20 +134,21 @@ html, body, #app {
 .el-button--success {
   background: var(--gradient-cool) !important;
   border: none !important;
-  color: #070714 !important;
+  color: #ffffff !important;
   box-shadow: var(--shadow-neon-green) !important;
   font-weight: 600;
 }
 
 .el-button--success:hover,
 .el-button--success:focus {
-  box-shadow: 0 0 25px rgba(0, 255, 170, 0.5) !important;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.5), 0 0 25px rgba(6, 182, 212, 0.3) !important;
+  opacity: 0.92;
 }
 
 .el-button--warning {
-  background: linear-gradient(135deg, #ffaa00, #ffd700) !important;
+  background: linear-gradient(135deg, #f59e0b, #fbbf24) !important;
   border: none !important;
-  color: #070714 !important;
+  color: #ffffff !important;
   box-shadow: var(--shadow-neon-orange) !important;
   font-weight: 600;
 }
@@ -433,20 +443,20 @@ html, body, #app {
 }
 
 .el-tag--success {
-  background-color: rgba(0, 255, 170, 0.1) !important;
-  border-color: rgba(0, 255, 170, 0.3) !important;
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
   color: var(--accent-green) !important;
 }
 
 .el-tag--warning {
-  background-color: rgba(255, 170, 0, 0.1) !important;
-  border-color: rgba(255, 170, 0, 0.3) !important;
+  background-color: rgba(245, 158, 11, 0.12) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
   color: var(--accent-orange) !important;
 }
 
 .el-tag--danger {
-  background-color: rgba(255, 68, 102, 0.1) !important;
-  border-color: rgba(255, 68, 102, 0.3) !important;
+  background-color: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
   color: var(--accent-red) !important;
 }
 
@@ -860,4 +870,348 @@ html, body, #app {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-purple);
+}
+
+/* ============================================
+   v2.0 新增 - 统一布局与间距工具类
+   ============================================ */
+
+/* 页面标题样式 */
+.tb-page-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  letter-spacing: 1px;
+}
+
+.tb-page-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 24px;
+  background: var(--gradient-main);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+}
+
+/* 区块标题 */
+.tb-section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tb-section-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 18px;
+  background: var(--gradient-primary);
+  border-radius: 2px;
+}
+
+/* 卡片通用增强 */
+.tb-card-enhanced {
+  background: var(--gradient-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-lg) !important;
+  transition: all var(--transition-normal) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.tb-card-enhanced::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-purple), var(--accent-cyan), transparent);
+  opacity: 0.5;
+}
+
+.tb-card-enhanced:hover {
+  border-color: var(--border-glow) !important;
+  box-shadow: var(--shadow-card-hover), var(--shadow-neon-purple) !important;
+  transform: translateY(-2px);
+}
+
+/* VIP 发光卡片 */
+.tb-vip-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%) !important;
+  border: 1px solid rgba(251, 191, 36, 0.3) !important;
+  border-radius: var(--radius-lg) !important;
+  overflow: hidden;
+}
+
+.tb-vip-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(251, 191, 36, 0.15) 0%, transparent 50%);
+  animation: tb-vip-glow 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes tb-vip-glow {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.tb-vip-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-gold-glow);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+}
+
+/* 霓虹边框按钮 */
+.tb-neon-btn {
+  position: relative;
+  background: transparent;
+  border: 1px solid var(--accent-purple);
+  color: var(--accent-purple);
+  padding: 10px 24px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-weight: 500;
+  overflow: hidden;
+}
+
+.tb-neon-btn:hover {
+  background: var(--accent-purple);
+  color: #fff;
+  box-shadow: var(--shadow-neon-purple);
+}
+
+.tb-neon-btn-cyan {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.tb-neon-btn-cyan:hover {
+  background: var(--accent-cyan);
+  box-shadow: var(--shadow-neon-cyan);
+}
+
+/* 数据统计数字 */
+.tb-stat-number {
+  font-size: 32px;
+  font-weight: 700;
+  font-family: var(--font-family-display);
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 1px;
+}
+
+.tb-stat-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* 渐变文字 */
+.tb-gradient-text {
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.tb-gradient-text-gold {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* 分隔装饰 */
+.tb-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.tb-divider::before,
+.tb-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+}
+
+/* 空状态美化 */
+.tb-empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.tb-empty-state .empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.4;
+}
+
+.tb-empty-state .empty-title {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.tb-empty-state .empty-desc {
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* 悬浮浮动条 */
+.tb-floating-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  padding: 12px 24px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card-hover), var(--shadow-neon-purple);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 200;
+  border: 1px solid var(--border-glow);
+  backdrop-filter: blur(20px);
+}
+
+/* 表格行差异高亮 */
+.tb-diff-highlight {
+  background-color: rgba(139, 92, 246, 0.1) !important;
+}
+
+.tb-same-dim {
+  opacity: 0.6;
+}
+
+.tb-winner-cell {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  color: var(--accent-green) !important;
+  font-weight: 600;
+}
+
+.tb-loser-cell {
+  background-color: rgba(239, 68, 68, 0.08) !important;
+  color: var(--accent-red) !important;
+}
+
+/* 徽章/角标 */
+.tb-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.tb-badge-primary {
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--accent-primary);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.tb-badge-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-green);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.tb-badge-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-orange);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.tb-badge-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-red);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* 进度条增强 */
+.tb-progress-bar {
+  height: 8px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tb-progress-bar .progress-fill {
+  height: 100%;
+  background: var(--gradient-main);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* 脉冲动画 */
+.tb-pulse {
+  animation: tb-pulse 2s ease-in-out infinite;
+}
+
+@keyframes tb-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* 浮动动画 */
+.tb-float {
+  animation: tb-float 3s ease-in-out infinite;
+}
+
+@keyframes tb-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* 发光文字 */
+.tb-glow-text {
+  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+/* 响应式断点提示 - 开发用 */
+.tb-responsive-debug::after {
+  content: 'Desktop';
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background: var(--accent-purple);
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  z-index: 9999;
 }

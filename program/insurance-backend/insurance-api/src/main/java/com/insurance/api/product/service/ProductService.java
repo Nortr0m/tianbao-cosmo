@@ -1,6 +1,9 @@
 package com.insurance.api.product.service;
 
 import com.insurance.api.product.dto.ProductQueryDTO;
+import com.insurance.api.product.vo.DiseaseStatVO;
+import com.insurance.api.product.vo.DiseaseVO;
+import com.insurance.api.product.vo.ProductBriefVO;
 import com.insurance.api.product.vo.ProductResponsibilityVO;
 import com.insurance.api.product.vo.ProductVO;
 import com.insurance.common.result.PageResult;
@@ -51,4 +54,29 @@ public interface ProductService {
      * 搜索产品
      */
     List<ProductVO> searchProducts(String keyword);
+
+    /**
+     * 获取产品疾病列表
+     *
+     * @param productId   产品ID
+     * @param diseaseType 疾病类型（1-重疾，2-中症，3-轻症，null表示全部）
+     * @return 疾病列表
+     */
+    List<DiseaseVO> getProductDiseases(Long productId, Integer diseaseType);
+
+    /**
+     * 获取产品疾病统计
+     *
+     * @param productId 产品ID
+     * @return 疾病统计
+     */
+    DiseaseStatVO getDiseaseStat(Long productId);
+
+    /**
+     * 获取产品简介（轻量级，用于快速展示）
+     *
+     * @param productId 产品ID
+     * @return 产品简介
+     */
+    ProductBriefVO getProductBrief(Long productId);
 }

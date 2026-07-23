@@ -5,6 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 产品VO
@@ -28,6 +29,9 @@ public class ProductVO implements Serializable {
 
     /** 保险公司名称 */
     private String companyName;
+
+    /** 保险公司Logo */
+    private String companyLogo;
 
     /** 产品类型（1-重疾险，2-增额终身寿险，3-年金险） */
     private Integer productType;
@@ -71,8 +75,17 @@ public class ProductVO implements Serializable {
     /** 维护状态（0-解析中，1-待人工确认，2-已确认，3-下线） */
     private Integer maintenanceStatus;
 
-    /** 子类型（1-分红型，2-固收型，3-传统型） */
-    private Integer subType;
+    /** 产品一句话简介 */
+    private String productBrief;
+
+    /** 产品亮点 */
+    private List<String> productHighlights;
+
+    /** 适合人群 */
+    private String suitableFor;
+
+    /** 产品详细描述 */
+    private String productDescription;
 
     /** 是否有保险条款 */
     private Boolean hasTerms;
@@ -97,4 +110,13 @@ public class ProductVO implements Serializable {
 
     /** 子类数据 */
     private Object subProductData;
+
+    /** 疾病列表 */
+    private List<DiseaseVO> diseases;
+
+    /** 疾病统计 */
+    private DiseaseStatVO diseaseStat;
+
+    /** 分红配置（分红型/万能型产品） */
+    private ProductDividendConfigVO dividendConfig;
 }

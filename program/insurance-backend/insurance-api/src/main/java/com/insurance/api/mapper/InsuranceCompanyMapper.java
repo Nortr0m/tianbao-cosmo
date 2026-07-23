@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.insurance.api.company.vo.CompanyCosmosVO;
 import com.insurance.api.entity.InsuranceCompany;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -44,4 +45,14 @@ public interface InsuranceCompanyMapper extends BaseMapper<InsuranceCompany> {
             "GROUP BY c.company_id, c.company_name, c.company_short_name, c.company_type, c.registered_capital " +
             "ORDER BY c.sort_order")
     List<CompanyCosmosVO> selectCosmosData();
+
+    /**
+     * 查询指定公司的热门产品名称（按创建时间倒序取前N款）
+     */
+    @Select("SELECT product_name FROM product_base " +
+            "WHERE company_id = #{companyId} " +
+            "  AND system_status = 1 AND maintenance_status = 2 AND is_deleted = 0 " +
+            "ORDER BY created_at DESC " +
+            "LIMIT #{limit}")
+    List<String> selectProductNamesByCompanyId(@Param("companyId") Long companyId, @Param("limit") Integer limit);
 }

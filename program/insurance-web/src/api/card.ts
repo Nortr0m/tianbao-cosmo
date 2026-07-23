@@ -1,4 +1,4 @@
-import { post, get } from './request'
+import { post, get, del } from './request'
 import type { ProductType } from './product'
 
 export interface CardTemplate {
@@ -19,21 +19,39 @@ export interface CardGenerateParams {
   paymentPeriod: string
   coverage: number
   premium: number
-  customizations?: {
-    backgroundImage?: string
-    watermark?: string
-    showLogo?: boolean
-    showQrCode?: boolean
-    customFields?: Record<string, string>
-  }
+  watermark?: string
+  customParams?: Record<string, any>
 }
 
 export interface CardGenerateResult {
-  id: number
+  recordId: number
   imageUrl: string
-  htmlContent: string
-  shareUrl: string
-  createdAt?: string
+  generateTime: string
+}
+
+export interface CardHistoryRecord {
+  recordId: number
+  templateId: number
+  productId: number
+  cardTitle: string
+  cardSubtitle: string
+  backgroundUrl: string
+  generatedImageUrl: string
+  age: number
+  gender: 'male' | 'female'
+  paymentPeriod: string
+  coverage: number
+  premium: number
+  watermark: string
+  generateTime: string
+}
+
+export interface CardHistoryResult {
+  list: CardHistoryRecord[]
+  total: number
+  pageNum: number
+  pageSize: number
+  totalPages: number
 }
 
 export function getCardTemplates(productType?: ProductType): Promise<CardTemplate[]> {
@@ -42,13 +60,13 @@ export function getCardTemplates(productType?: ProductType): Promise<CardTemplat
 }
 
 export function generateCard(params: CardGenerateParams): Promise<CardGenerateResult> {
-  return post<CardGenerateResult>('/v1/card-template/generate', params)
+  return post<CardGenerateResult>('/v1/card/generate', params)
 }
 
-export function getCardHistory(page = 1, pageSize = 10): Promise<{ list: CardGenerateResult[]; total: number }> {
-  return get<{ list: CardGenerateResult[]; total: number }>('/v1/card-template/history', { params: { page, pageSize } })
+export function getCardHistory(pageNum = 1, pageSize = 10): Promise<CardHistoryResult> {
+  return get<CardHistoryResult>('/v1/card/history', { params: { pageNum, pageSize } })
 }
 
-export function deleteCard(id: number): Promise<void> {
-  return post<void>(`/v1/card-template/${id}/delete`)
+export function deleteCard(recordId: number): Promise<void> {
+  return del<void>(`/v1/card/${recordId}`)
 }

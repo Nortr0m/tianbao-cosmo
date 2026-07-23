@@ -27,6 +27,9 @@ public class ResponsibilityItem {
     /** 责任项名称 */
     private String itemName;
 
+    /** 责任项描述 */
+    private String description;
+
     /** 选项配置（JSON数组） */
     private String options;
 

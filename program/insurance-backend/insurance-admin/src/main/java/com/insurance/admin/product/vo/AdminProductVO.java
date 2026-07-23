@@ -68,6 +68,9 @@ public class AdminProductVO implements Serializable {
     /** 系统状态 */
     private Integer systemStatus;
 
+    /** 收益类型(固收型/分红型/万能型) */
+    private String yieldType;
+
     /** 创建时间 */
     private LocalDateTime createdAt;
 

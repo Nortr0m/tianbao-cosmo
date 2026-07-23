@@ -6,6 +6,7 @@ import com.insurance.admin.product.dto.AdminProductUpdateDTO;
 import com.insurance.admin.product.service.AdminProductService;
 import com.insurance.admin.product.vo.AdminProductVO;
 import com.insurance.admin.product.vo.AnnuityRateImportResultVO;
+import com.insurance.admin.product.vo.PremiumRateImportResultVO;
 import com.insurance.admin.product.vo.WholeLifeRateImportResultVO;
 import com.insurance.common.result.PageResult;
 import com.insurance.common.result.Result;
@@ -96,5 +97,15 @@ public class AdminProductController {
             @PathVariable Long productId,
             @RequestParam("file") MultipartFile file) {
         return Result.success(adminProductService.importAnnuityRates(productId, file));
+    }
+
+    /**
+     * 导入重疾险费率
+     */
+    @PostMapping("/{productId}/import-premium-rates")
+    public Result<PremiumRateImportResultVO> importPremiumRates(
+            @PathVariable Long productId,
+            @RequestParam("file") MultipartFile file) {
+        return Result.success(adminProductService.importPremiumRates(productId, file));
     }
 }

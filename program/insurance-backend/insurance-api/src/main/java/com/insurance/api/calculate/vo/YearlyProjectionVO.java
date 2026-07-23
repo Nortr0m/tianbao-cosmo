@@ -36,4 +36,17 @@ public class YearlyProjectionVO implements Serializable {
 
     /** 保证部分身故保险金（分红型产品） */
     private BigDecimal deathBenefitGuaranteed;
+
+    /** 当年红利金额（分红型产品） */
+    private BigDecimal annualDividend;
+    /** 累积红利（分红型产品） */
+    private BigDecimal accumulatedDividend;
+    /** 保证部分收益率（分红型产品） */
+    private BigDecimal returnRateGuaranteed;
+    /** 含红利总现金价值 */
+    private BigDecimal totalValueWithDividend;
+    /** 年领取金额（年金险） */
+    private BigDecimal annualPayout;
+    /** 累计领取金额（年金险） */
+    private BigDecimal totalReceived;
 }

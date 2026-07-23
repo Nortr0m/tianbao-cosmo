@@ -1,9 +1,27 @@
 <template>
   <div class="withdrawal-plan">
+    <!-- 减保规则说明 -->
+    <el-alert
+      v-if="reductionRule"
+      :title="reductionRule"
+      type="info"
+      :closable="false"
+      show-icon
+      class="rule-alert"
+    />
+    <div class="rule-tags" v-if="reductionStartYear || (reductionTimesLimit !== undefined && reductionTimesLimit !== null)">
+      <el-tag v-if="reductionStartYear" size="small" type="primary" effect="plain">
+        减保起始：第{{ reductionStartYear }}年
+      </el-tag>
+      <el-tag v-if="reductionTimesLimit !== undefined && reductionTimesLimit !== null" size="small" type="warning" effect="plain">
+        {{ reductionTimesLimit === 0 ? '减保次数：不限' : `减保次数：最多${reductionTimesLimit}次` }}
+      </el-tag>
+    </div>
+
     <el-form :model="form" label-width="120px">
       <el-form-item label="减保起始年龄">
         <el-radio-group v-model="form.startAge">
-          <el-radio-button v-for="age in startAgeOptions" :key="age" :label="age">
+          <el-radio-button v-for="age in startAgeOptions" :key="age" :value="age">
             {{ age }}岁
           </el-radio-button>
         </el-radio-group>
@@ -11,9 +29,9 @@
 
       <el-form-item label="减保方式">
         <el-radio-group v-model="form.withdrawalType">
-          <el-radio-button label="fixed_amount">固定金额</el-radio-button>
-          <el-radio-button label="fixed_rate">固定比例</el-radio-button>
-          <el-radio-button label="custom">自定义</el-radio-button>
+          <el-radio-button value="fixed_amount">固定金额</el-radio-button>
+          <el-radio-button value="fixed_rate">固定比例</el-radio-button>
+          <el-radio-button value="custom">自定义</el-radio-button>
         </el-radio-group>
       </el-form-item>
 
@@ -42,9 +60,9 @@
 
       <el-form-item label="减保期限">
         <el-radio-group v-model="form.durationType">
-          <el-radio-button label="age_80">至80岁</el-radio-button>
-          <el-radio-button label="lifetime">至终身</el-radio-button>
-          <el-radio-button label="zero_value">至现金价值为0</el-radio-button>
+          <el-radio-button value="age_80">至80岁</el-radio-button>
+          <el-radio-button value="lifetime">至终身</el-radio-button>
+          <el-radio-button value="zero_value">至现金价值为0</el-radio-button>
         </el-radio-group>
       </el-form-item>
     </el-form>
@@ -98,6 +116,12 @@ export interface WithdrawalSummary {
 interface Props {
   modelValue: WithdrawalForm
   summary?: WithdrawalSummary
+  /** 减保规则文本 */
+  reductionRule?: string
+  /** 减保起始年份 */
+  reductionStartYear?: number
+  /** 减保次数限制（0表示不限） */
+  reductionTimesLimit?: number
 }
 
 const props = defineProps<Props>()
@@ -141,11 +165,26 @@ function removeCustomRow(index: number) {
 <style scoped>
 .withdrawal-plan {
   padding: 8px 0;
+  color: var(--text-primary);
+}
+
+.rule-alert {
+  margin-bottom: 16px;
+  --el-alert-info-bg-color: rgba(0, 240, 255, 0.08);
+  --el-alert-info-text-color: var(--text-secondary);
+  --el-alert-info-border-color: rgba(0, 240, 255, 0.2);
+}
+
+.rule-tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
 .unit {
   margin-left: 8px;
-  color: #606266;
+  color: var(--text-muted);
 }
 
 .custom-rows {
@@ -162,20 +201,27 @@ function removeCustomRow(index: number) {
 }
 
 .plan-summary {
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 .summary-item {
-  background: #f5f7fa;
-  border-radius: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
   padding: 16px;
   text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.summary-item:hover {
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-neon-purple);
 }
 
 .summary-item .label {
   display: block;
   font-size: 13px;
-  color: #909399;
+  color: var(--text-muted);
   margin-bottom: 8px;
 }
 
@@ -183,6 +229,6 @@ function removeCustomRow(index: number) {
   display: block;
   font-size: 20px;
   font-weight: 700;
-  color: #409eff;
+  color: var(--accent-purple);
 }
 </style>

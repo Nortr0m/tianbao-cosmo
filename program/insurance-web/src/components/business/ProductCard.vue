@@ -1,8 +1,11 @@
 <template>
-  <el-card class="product-card" :body-style="{ padding: '0px' }" shadow="hover">
+  <el-card class="product-card" :class="{ 'is-disabled': saleStatusText === '已停售' }" :body-style="{ padding: '0px' }" shadow="hover" @click="handleCardClick">
     <div class="product-card-header">
       <div class="product-type-tag" :style="{ backgroundColor: typeColor }">
         {{ typeLabel }}
+      </div>
+      <div v-if="saleStatusText && saleStatusText !== '在售'" class="sale-status-tag" :class="saleStatusClass">
+        {{ saleStatusText }}
       </div>
       <img v-if="product.companyLogo" :src="product.companyLogo" :alt="product.companyName" class="company-logo" />
     </div>
@@ -25,14 +28,17 @@
         </div>
       </div>
       <div class="footer-actions">
-        <el-button type="primary" size="small" @click="handleViewDetail">
+        <el-button type="primary" size="small" @click.stop="handleViewDetail">
           查看详情
+        </el-button>
+        <el-button type="success" size="small" @click.stop="handleGenerateCard">
+          生成卡片
         </el-button>
         <el-button
           v-if="showCompare"
           :type="isSelected ? 'success' : 'default'"
           size="small"
-          @click="handleToggleCompare"
+          @click.stop="handleToggleCompare"
         >
           {{ isSelected ? '已加入' : '对比' }}
         </el-button>
@@ -43,6 +49,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import type { Product } from '@/api/product'
 // import { formatCurrency } from '@/utils/format'
 
@@ -64,12 +71,22 @@ const emit = defineEmits<{
   toggleCompare: [productId: number]
 }>()
 
+const router = useRouter()
+
 function handleViewDetail() {
+  emit('viewDetail', props.product.productId)
+}
+
+function handleCardClick() {
   emit('viewDetail', props.product.productId)
 }
 
 function handleToggleCompare() {
   emit('toggleCompare', props.product.productId)
+}
+
+function handleGenerateCard() {
+  router.push(`/card/generate?productId=${props.product.productId}`)
 }
 
 function safeParseJSON(val: string | string[] | undefined): string[] {
@@ -98,6 +115,22 @@ const subTypeLabel = computed(() => {
   if (sub === 1) return '分红型'
   if (sub === 2) return '固收型'
   if (sub === 3) return '传统型'
+  return ''
+})
+
+// 销售状态：0-已停售，1-在售，2-预售中（与后端SaleStatusEnum一致）
+const saleStatusText = computed(() => {
+  const p = props.product as any
+  if (p.saleStatus === 0) return '已停售'
+  if (p.saleStatus === 1) return '在售'
+  if (p.saleStatus === 2) return '预售中'
+  return ''
+})
+
+const saleStatusClass = computed(() => {
+  const p = props.product as any
+  if (p.saleStatus === 2) return 'status-presale'
+  if (p.saleStatus === 0) return 'status-offline'
   return ''
 })
 
@@ -130,6 +163,19 @@ const displayPaymentMethod = computed(() => {
   background-color: var(--bg-card) !important;
   border: 1px solid var(--border-color) !important;
   box-shadow: var(--shadow-card) !important;
+  cursor: pointer;
+}
+
+.product-card.is-disabled {
+  opacity: 0.6;
+  filter: grayscale(0.5);
+  cursor: not-allowed;
+}
+
+.product-card.is-disabled:hover {
+  transform: none;
+  box-shadow: var(--shadow-card) !important;
+  border-color: var(--border-color) !important;
 }
 
 .product-card:hover {
@@ -153,6 +199,25 @@ const displayPaymentMethod = computed(() => {
   border-radius: 12px;
   font-size: 12px;
   font-weight: 500;
+}
+
+.sale-status-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.sale-status-tag.status-presale {
+  background-color: #e6a23c;
+}
+
+.sale-status-tag.status-offline {
+  background-color: #909399;
 }
 
 .company-logo {
@@ -184,25 +249,6 @@ const displayPaymentMethod = computed(() => {
   font-size: 13px;
   color: var(--text-secondary);
   margin-bottom: 8px;
-}
-
-.product-summary {
-  font-size: 12px;
-  color: var(--text-muted);
-  line-height: 1.5;
-  margin-bottom: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-.product-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
 }
 
 .product-meta {

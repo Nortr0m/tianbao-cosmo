@@ -1,8 +1,11 @@
 package com.insurance.api.company.service;
 
 import com.insurance.api.company.dto.CompanyQueryDTO;
+import com.insurance.api.company.vo.CompanyCosmosVO;
 import com.insurance.api.company.vo.CompanyRatingVO;
+import com.insurance.api.company.vo.CompanyRelationInfoVO;
 import com.insurance.api.company.vo.CompanyVO;
+import com.insurance.api.company.vo.ShareholderInfoVO;
 import com.insurance.common.result.PageResult;
 
 import java.util.List;
@@ -49,4 +52,20 @@ public interface CompanyService {
      * @return 保险宇宙数据
      */
     List<CompanyCosmosVO> getCosmosData();
+
+    /**
+     * 获取某公司的股东列表（按持股比例降序，仅≥10%的）
+     *
+     * @param companyId 保险公司ID
+     * @return 股东列表
+     */
+    List<ShareholderInfoVO> getCompanyShareholders(Long companyId);
+
+    /**
+     * 获取与某公司有关联关系的其他公司
+     *
+     * @param companyId 保险公司ID
+     * @return 关联公司列表
+     */
+    List<CompanyRelationInfoVO> getCompanyRelations(Long companyId);
 }

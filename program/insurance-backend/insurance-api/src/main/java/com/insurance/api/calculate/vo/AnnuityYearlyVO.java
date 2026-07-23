@@ -30,4 +30,19 @@ public class AnnuityYearlyVO implements Serializable {
 
     /** 累计领取 */
     private BigDecimal totalReceived;
+
+    /** 保证部分现金价值（分红型产品） */
+    private BigDecimal cashValueGuaranteed;
+
+    /** 分红部分现金价值（分红型产品） */
+    private BigDecimal dividendCashValue;
+
+    /** 保证部分年领取金额（分红型产品） */
+    private BigDecimal annualPayoutGuaranteed;
+
+    /** 分红部分年领取金额（分红型产品） */
+    private BigDecimal annualPayoutDividend;
+
+    /** 保证部分身故保险金（分红型产品） */
+    private BigDecimal deathBenefitGuaranteed;
 }

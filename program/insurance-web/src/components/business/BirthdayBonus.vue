@@ -102,11 +102,12 @@ watch(
 <style scoped>
 .birthday-bonus {
   padding: 8px 0;
+  color: var(--text-primary);
 }
 
 .unit {
   margin-left: 8px;
-  color: #606266;
+  color: var(--text-muted);
 }
 
 .bonus-summary {

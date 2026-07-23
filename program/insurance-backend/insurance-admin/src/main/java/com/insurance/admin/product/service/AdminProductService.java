@@ -5,6 +5,7 @@ import com.insurance.admin.product.dto.AdminProductQueryDTO;
 import com.insurance.admin.product.dto.AdminProductUpdateDTO;
 import com.insurance.admin.product.vo.AdminProductVO;
 import com.insurance.admin.product.vo.AnnuityRateImportResultVO;
+import com.insurance.admin.product.vo.PremiumRateImportResultVO;
 import com.insurance.admin.product.vo.WholeLifeRateImportResultVO;
 import com.insurance.common.result.PageResult;
 
@@ -78,4 +79,13 @@ public interface AdminProductService {
      * @return 导入结果
      */
     AnnuityRateImportResultVO importAnnuityRates(Long productId, org.springframework.web.multipart.MultipartFile file);
+
+    /**
+     * 导入重疾险费率
+     *
+     * @param productId 产品ID
+     * @param file Excel文件
+     * @return 导入结果
+     */
+    PremiumRateImportResultVO importPremiumRates(Long productId, org.springframework.web.multipart.MultipartFile file);
 }

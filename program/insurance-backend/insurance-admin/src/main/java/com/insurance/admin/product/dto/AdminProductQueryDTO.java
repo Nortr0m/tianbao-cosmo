@@ -18,8 +18,8 @@ public class AdminProductQueryDTO implements Serializable {
     /** 每页数量 */
     private Integer pageSize = 10;
 
-    /** 产品名称 */
-    private String productName;
+    /** 搜索关键词 */
+    private String keyword;
 
     /** 保险公司ID */
     private Long companyId;
@@ -32,4 +32,7 @@ public class AdminProductQueryDTO implements Serializable {
 
     /** 销售状态 */
     private Integer saleStatus;
+
+    /** 维护状态 */
+    private Integer maintenanceStatus;
 }

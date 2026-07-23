@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "天保星君",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#F7FAFC",
+  "usingComponents": {
+    "van-grid": "@vant/weapp/grid/index",
+    "van-grid-item": "@vant/weapp/grid-item/index",
+    "van-icon": "@vant/weapp/icon/index",
+    "product-card": "../../components/product-card/product-card"
+  }
+}

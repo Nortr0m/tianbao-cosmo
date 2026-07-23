@@ -1,76 +1,59 @@
-# Logs
-*.log
-*.err
+# ============================================================
+# 天保星君 - Git Ignore
+# 策略：仅推送 program/ 目录下的源代码，排除所有产品资料
+# ============================================================
 
-# TRAE
+# === TRAE & IDE ===
 .trae/
-
-# Uploads
 .uploads/
-
-# Large data directories
-资料/
-卡片背景/
-卡片背景资料/
-宇宙/
-数据验证/
-自媒体/
-保险文档/
-参考资料/
-product-cards/
-
-# Frontend build (handled separately)
-frontend/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
+.trae-html-share-packages/
 .vscode/
 .idea/
 
-# Dependencies
-node_modules/
-target/
-dist/
+# === OS ===
+.DS_Store
+Thumbs.db
 
-# Large archives
+# === 排除根目录下所有文件和目录（产品资料、报告、文档等）===
+/*
+
+# === 仅保留代码目录和必要配置 ===
+!/program/
+!/.gitignore
+!/README.md
+
+# === program/ 目录内的排除项 ===
+# 构建产物
+program/**/node_modules/
+program/**/target/
+program/**/dist/
+program/**/build/
+program/**/.gradle/
+program/**/*.class
+
+# 环境配置
+program/**/.env
+program/**/.env.local
+program/**/.env.*.local
+
+# IDE 缓存
+program/**/.vscode/
+program/**/.idea/
+program/**/*.iml
+
+# 日志
+program/**/*.log
+program/**/*.err
+
+# 编译产物
+program/**/*.exe
+program/**/*.dll
+
+# 产品资料（program 目录内）
+program/卡片背景资料/
+
+# === 通用排除 ===
 *.zip
 *.tar.gz
 *.rar
 *.7z
-
-# Media and documents
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.webp
-*.svg
-*.ico
-*.bmp
-
-*.pdf
-*.doc
-*.docx
-*.xls
-*.xlsx
-*.ppt
-*.pptx
-
-*.mp4
-*.mp3
-*.avi
-*.mov
-*.wmv
-
-# Data files
-*.sql
-*.csv
-*.json
-
-# Other
-*.exe
-*.dll
-*.class

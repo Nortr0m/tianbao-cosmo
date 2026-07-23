@@ -8,18 +8,24 @@ import com.insurance.admin.product.dto.AdminProductCreateDTO;
 import com.insurance.admin.product.dto.AdminProductQueryDTO;
 import com.insurance.admin.product.dto.AdminProductUpdateDTO;
 import com.insurance.admin.product.dto.AnnuityRateImportDTO;
+import com.insurance.admin.product.dto.PremiumRateImportDTO;
 import com.insurance.admin.product.dto.WholeLifeRateImportDTO;
 import com.insurance.admin.product.service.AdminProductService;
 import com.insurance.admin.product.vo.AdminProductVO;
 import com.insurance.admin.product.vo.AnnuityRateImportResultVO;
+import com.insurance.admin.product.vo.PremiumRateImportResultVO;
 import com.insurance.admin.product.vo.WholeLifeRateImportResultVO;
+import com.insurance.api.entity.AnnuityProduct;
 import com.insurance.api.entity.AnnuityRate;
 import com.insurance.api.entity.InsuranceCompany;
+import com.insurance.api.entity.PremiumRate;
 import com.insurance.api.entity.ProductBase;
 import com.insurance.api.entity.WholeLifeProduct;
 import com.insurance.api.entity.WholeLifeRate;
+import com.insurance.api.mapper.AnnuityProductMapper;
 import com.insurance.api.mapper.AnnuityRateMapper;
 import com.insurance.api.mapper.InsuranceCompanyMapper;
+import com.insurance.api.mapper.PremiumRateMapper;
 import com.insurance.api.mapper.ProductBaseMapper;
 import com.insurance.api.mapper.WholeLifeProductMapper;
 import com.insurance.api.mapper.WholeLifeRateMapper;
@@ -30,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -54,7 +61,9 @@ public class AdminProductServiceImpl implements AdminProductService {
     private final InsuranceCompanyMapper insuranceCompanyMapper;
     private final WholeLifeProductMapper wholeLifeProductMapper;
     private final WholeLifeRateMapper wholeLifeRateMapper;
+    private final AnnuityProductMapper annuityProductMapper;
     private final AnnuityRateMapper annuityRateMapper;
+    private final PremiumRateMapper premiumRateMapper;
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -63,8 +72,8 @@ public class AdminProductServiceImpl implements AdminProductService {
         Page<ProductBase> page = new Page<>(queryDTO.getPageNum(), queryDTO.getPageSize());
         LambdaQueryWrapper<ProductBase> wrapper = new LambdaQueryWrapper<>();
 
-        if (queryDTO.getProductName() != null && !queryDTO.getProductName().isEmpty()) {
-            wrapper.like(ProductBase::getProductName, queryDTO.getProductName());
+        if (queryDTO.getKeyword() != null && !queryDTO.getKeyword().isEmpty()) {
+            wrapper.like(ProductBase::getProductName, queryDTO.getKeyword());
         }
         if (queryDTO.getCompanyId() != null) {
             wrapper.eq(ProductBase::getCompanyId, queryDTO.getCompanyId());
@@ -78,14 +87,28 @@ public class AdminProductServiceImpl implements AdminProductService {
         if (queryDTO.getSaleStatus() != null) {
             wrapper.eq(ProductBase::getSaleStatus, queryDTO.getSaleStatus());
         }
+        // maintenanceStatus 暂用 product_name 模糊匹配作为前端展示用
+        // 如需真正维护状态字段，需在数据库中添加对应列
+        if (queryDTO.getMaintenanceStatus() != null) {
+            // 维护状态筛选：0=解析中, 1=待人工确认, 2=已确认, 3=已下线
+            // 暂映射到 systemStatus: 解析中->0(未上架), 待确认->0, 已确认->1(已上架), 已下线->0+停售
+            if (queryDTO.getMaintenanceStatus() == 2) {
+                wrapper.eq(ProductBase::getSystemStatus, 1);
+            } else if (queryDTO.getMaintenanceStatus() == 3) {
+                wrapper.eq(ProductBase::getSaleStatus, 0);
+            }
+            // 0和1(解析中/待确认)暂不额外过滤，因为所有产品都可能属于这两个状态
+        }
         wrapper.orderByDesc(ProductBase::getCreatedAt);
 
         Page<ProductBase> resultPage = productBaseMapper.selectPage(page, wrapper);
         List<Long> companyIds = resultPage.getRecords().stream()
                 .map(ProductBase::getCompanyId)
+                .filter(id -> id != null)
                 .distinct()
                 .collect(Collectors.toList());
-        Map<Long, String> companyNameMap = insuranceCompanyMapper.selectBatchIds(companyIds).stream()
+        Map<Long, String> companyNameMap = companyIds.isEmpty() ? new java.util.HashMap<>()
+                : insuranceCompanyMapper.selectBatchIds(companyIds).stream()
                 .collect(Collectors.toMap(InsuranceCompany::getCompanyId, InsuranceCompany::getCompanyName));
 
         List<AdminProductVO> list = resultPage.getRecords().stream()
@@ -95,6 +118,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long createProduct(AdminProductCreateDTO createDTO) {
         ProductBase product = new ProductBase();
         BeanUtils.copyProperties(createDTO, product);
@@ -117,6 +141,13 @@ public class AdminProductServiceImpl implements AdminProductService {
             subProduct.setIncreaseEndAge(createDTO.getIncreaseEndAge());
             subProduct.setSupportAgeList(createDTO.getSupportAgeList());
             wholeLifeProductMapper.insert(subProduct);
+        }
+        
+        // 年金险子类数据
+        if (createDTO.getProductType() != null && createDTO.getProductType() == 3) {
+            AnnuityProduct subProduct = new AnnuityProduct();
+            subProduct.setProductId(product.getProductId());
+            annuityProductMapper.insert(subProduct);
         }
         
         return product.getProductId();
@@ -575,17 +606,23 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
     // 列名映射表（支持多种列名写法）
-    private static final Map<String, List<String>> HEADER_ALIASES = Map.of(
-        "gender", List.of("性别", "gender", "性別"),
-        "age", List.of("年龄", "投保年龄", "age", "年齡"),
-        "paymentYear", List.of("交费期间", "缴费年限", "缴费期间", "交费年限", "保险期间", "paymentYear"),
-        "startAge", List.of("起领年龄", "领取年龄", "开始领取年龄", "起始年龄", "起始领取年龄", "startAge"),
-        "planId", List.of("产品计划", "计划", "plan", "planId", "保障计划"),
-        "policyYear", List.of("保单年度", "policyYear"),
-        "annualPayout", List.of("年领取金额", "年领金额", "annualPayout", "年金", "生存保险金", "养老金"),
-        "cashValue", List.of("现金价值", "cashValue", "現金價值"),
-        "deathBenefit", List.of("身故保险金", "deathBenefit", "身故給付")
-    );
+    private static final Map<String, List<String>> HEADER_ALIASES;
+    static {
+        Map<String, List<String>> map = new HashMap<>();
+        map.put("gender", List.of("性别", "gender", "性別"));
+        map.put("age", List.of("年龄", "投保年龄", "age", "年齡"));
+        map.put("paymentYear", List.of("交费期间", "缴费年限", "缴费期间", "交费年限", "保险期间", "paymentYear"));
+        map.put("startAge", List.of("起领年龄", "领取年龄", "开始领取年龄", "起始年龄", "起始领取年龄", "startAge"));
+        map.put("planId", List.of("产品计划", "计划", "plan", "planId", "保障计划"));
+        map.put("policyYear", List.of("保单年度", "policyYear"));
+        map.put("annualPayout", List.of("年领取金额", "年领金额", "annualPayout", "年金", "生存保险金", "养老金"));
+        map.put("cashValue", List.of("现金价值", "cashValue", "現金價值"));
+        map.put("deathBenefit", List.of("身故保险金", "deathBenefit", "身故給付"));
+        map.put("comboCode", List.of("组合编码", "comboCode", "组合代码", "计划编码"));
+        map.put("premiumPerK", List.of("每千元保费", "千元保费", "premiumPerK", "费率", "保费", "每千元保额保费"));
+        map.put("healthStatus", List.of("健康状态", "healthStatus", "体况", "健康分类"));
+        HEADER_ALIASES = Collections.unmodifiableMap(map);
+    }
 
     private String normalizeHeader(String header) {
         if (header == null) return "";
@@ -712,6 +749,160 @@ public class AdminProductServiceImpl implements AdminProductService {
             case STRING: return cell.getStringCellValue().trim();
             case NUMERIC: return String.valueOf((int) cell.getNumericCellValue());
             default: return null;
+        }
+    }
+
+    @Override
+    public PremiumRateImportResultVO importPremiumRates(Long productId, MultipartFile file) {
+        ProductBase product = productBaseMapper.selectById(productId);
+        if (product == null) {
+            throw new BusinessException("产品不存在");
+        }
+        if (product.getProductType() != 1) {
+            throw new BusinessException("该产品不是重疾险，无法导入重疾险费率");
+        }
+
+        PremiumRateImportResultVO result = new PremiumRateImportResultVO();
+        int totalCount = 0;
+        int successCount = 0;
+        int failCount = 0;
+
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null) {
+            throw new BusinessException("文件名为空");
+        }
+        String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
+
+        try {
+            List<PremiumRateImportDTO> rows;
+            if ("pdf".equals(ext)) {
+                rows = parsePdfToPremiumRates(file);
+            } else if ("xlsx".equals(ext) || "xls".equals(ext)) {
+                rows = parseExcelToPremiumRates(file);
+            } else {
+                throw new BusinessException("不支持的文件格式: " + ext);
+            }
+
+            for (PremiumRateImportDTO dto : rows) {
+                try {
+                    if (dto.getGender() == null || dto.getAge() == null || dto.getPaymentYear() == null
+                            || dto.getPremiumPerK() == null) {
+                        failCount++;
+                        continue;
+                    }
+
+                    PremiumRate rate = new PremiumRate();
+                    rate.setProductId(productId);
+                    rate.setComboCode(dto.getComboCode() != null ? dto.getComboCode() : 0);
+                    rate.setGender(dto.getGender());
+                    rate.setAge(dto.getAge());
+                    rate.setPaymentYear(dto.getPaymentYear());
+                    rate.setPremiumPerK(dto.getPremiumPerK());
+                    rate.setHealthStatus(dto.getHealthStatus() != null ? dto.getHealthStatus() : 0);
+                    premiumRateMapper.insert(rate);
+                    successCount++;
+                } catch (Exception e) {
+                    log.warn("导入失败: {}", e.getMessage());
+                    failCount++;
+                }
+                totalCount++;
+            }
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BusinessException("文件解析失败: " + e.getMessage());
+        }
+
+        result.setTotalCount(totalCount);
+        result.setSuccessCount(successCount);
+        result.setFailCount(failCount);
+        result.setMessage(failCount > 0
+                ? "导入完成：成功" + successCount + "条，失败" + failCount + "条"
+                : "导入完成：成功" + successCount + "条");
+        return result;
+    }
+
+    private List<PremiumRateImportDTO> parseExcelToPremiumRates(MultipartFile file) throws Exception {
+        List<PremiumRateImportDTO> rows = new ArrayList<>();
+        try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+            if (sheet == null) {
+                throw new BusinessException("Excel文件为空");
+            }
+
+            Row headerRow = sheet.getRow(0);
+            if (headerRow == null) {
+                throw new BusinessException("Excel文件没有表头");
+            }
+
+            Map<String, Integer> colMap = new HashMap<>();
+            for (int c = 0; c < headerRow.getLastCellNum(); c++) {
+                String header = normalizeHeader(getStringCellValue(headerRow.getCell(c)));
+                if (header != null && !header.isEmpty()) {
+                    colMap.put(header, c);
+                }
+            }
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+
+                PremiumRateImportDTO dto = new PremiumRateImportDTO();
+                dto.setComboCode(getColValue(row, colMap, "comboCode"));
+                dto.setGender(getColValue(row, colMap, "gender"));
+                dto.setAge(getColValue(row, colMap, "age"));
+                dto.setPaymentYear(getColValue(row, colMap, "paymentYear"));
+                dto.setPremiumPerK(getBigDecimalColValue(row, colMap, "premiumPerK"));
+                dto.setHealthStatus(getColValue(row, colMap, "healthStatus"));
+                rows.add(dto);
+            }
+        }
+        return rows;
+    }
+
+    private List<PremiumRateImportDTO> parsePdfToPremiumRates(MultipartFile file) throws Exception {
+        File tempPdf = File.createTempFile("upload_", ".pdf");
+        File tempJson = File.createTempFile("output_", ".json");
+        try {
+            file.transferTo(tempPdf);
+
+            ProcessBuilder pb = new ProcessBuilder(
+                    "python",
+                    "c:\\Users\\Administrator\\.trae-cn\\work\\6a32467fb130998a25f03b4d\\insurance_table_parser.py",
+                    tempPdf.getAbsolutePath(),
+                    tempJson.getAbsolutePath()
+            );
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                throw new BusinessException("PDF解析脚本执行失败");
+            }
+
+            String jsonContent = new String(Files.readAllBytes(tempJson.toPath()));
+            JsonNode jsonNode = OBJECT_MAPPER.readTree(jsonContent);
+            if (!jsonNode.has("success") || !jsonNode.get("success").asBoolean()) {
+                throw new BusinessException("PDF解析失败");
+            }
+
+            List<PremiumRateImportDTO> rows = new ArrayList<>();
+            JsonNode rowsNode = jsonNode.get("rows");
+            if (rowsNode != null && rowsNode.isArray()) {
+                for (JsonNode rowNode : rowsNode) {
+                    PremiumRateImportDTO dto = new PremiumRateImportDTO();
+                    dto.setComboCode(rowNode.has("comboCode") ? rowNode.get("comboCode").asInt() : 0);
+                    dto.setGender(rowNode.has("gender") ? rowNode.get("gender").asInt() : null);
+                    dto.setAge(rowNode.has("age") ? rowNode.get("age").asInt() : null);
+                    dto.setPaymentYear(rowNode.has("paymentYear") ? rowNode.get("paymentYear").asInt() : null);
+                    dto.setPremiumPerK(rowNode.has("premiumPerK") ? new BigDecimal(rowNode.get("premiumPerK").asText()) : null);
+                    dto.setHealthStatus(rowNode.has("healthStatus") ? rowNode.get("healthStatus").asInt() : 0);
+                    rows.add(dto);
+                }
+            }
+            return rows;
+        } finally {
+            tempPdf.delete();
+            tempJson.delete();
         }
     }
 }

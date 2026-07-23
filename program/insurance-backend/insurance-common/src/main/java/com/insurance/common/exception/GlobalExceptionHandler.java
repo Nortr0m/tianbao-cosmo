@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,12 +23,25 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     /**
-     * 业务异常
+     * 业务异常 - 根据异常消息智能映射HTTP状态码
      */
     @ExceptionHandler(BusinessException.class)
-    public Result<Void> handleBusinessException(BusinessException e, HttpServletRequest request) {
+    public ResponseEntity<Result<Void>> handleBusinessException(BusinessException e, HttpServletRequest request) {
         log.warn("业务异常: [{}] {}", request.getRequestURI(), e.getMessage());
-        return Result.fail(e.getCode(), e.getMessage());
+        HttpStatus status = resolveHttpStatus(e);
+        return ResponseEntity.status(status).body(Result.fail(e.getCode(), e.getMessage()));
+    }
+
+    private HttpStatus resolveHttpStatus(BusinessException e) {
+        String msg = e.getMessage();
+        if (msg == null) return HttpStatus.BAD_REQUEST;
+        if (msg.contains("不存在")) return HttpStatus.NOT_FOUND;           // 404
+        if (msg.contains("不能为空")) return HttpStatus.BAD_REQUEST;        // 400
+        if (msg.contains("不支持的")) return HttpStatus.BAD_REQUEST;        // 400
+        if (msg.contains("无效")) return HttpStatus.BAD_REQUEST;           // 400
+        if (msg.contains("无法")) return HttpStatus.BAD_REQUEST;           // 400
+        if (msg.contains("无权")) return HttpStatus.FORBIDDEN;             // 403
+        return HttpStatus.BAD_REQUEST; // 默认业务异常返回400
     }
 
     /**

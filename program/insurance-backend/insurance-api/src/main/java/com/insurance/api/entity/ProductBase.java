@@ -68,8 +68,35 @@ public class ProductBase extends BaseEntity {
     /** 系统状态（0-禁用，1-启用） */
     private Integer systemStatus;
 
+    /** 收益类型(固收型/分红型/万能型) */
+    private String yieldType;
+
     /** 维护状态（0-解析中，1-待人工确认，2-已确认，3-下线） */
     private Integer maintenanceStatus;
+
+    /** 产品一句话简介 */
+    private String productBrief;
+
+    /** 产品亮点（JSON数组） */
+    private String productHighlights;
+
+    /** 适合人群 */
+    private String suitableFor;
+
+    /** 产品详细描述 */
+    private String productDescription;
+
+    /** 产品标签（JSON数组） */
+    private String productTags;
+
+    /** 保障摘要 */
+    private String coverageSummary;
+
+    /** 推荐指数（1-5） */
+    private Integer recommendationScore;
+
+    /** 简介状态（0-未生成，1-AI生成，2-审核通过，3-人工编辑） */
+    private Integer briefStatus;
 
     /** 创建时间 */
     private LocalDateTime createdAt;

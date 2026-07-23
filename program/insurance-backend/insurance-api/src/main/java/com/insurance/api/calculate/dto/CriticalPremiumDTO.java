@@ -27,10 +27,15 @@ public class CriticalPremiumDTO implements Serializable {
     private Integer age;
 
     /** 缴费年限 */
-    @NotNull(message = "缴费年限不能为空")
     private Integer paymentYear;
+
+    /** 缴费年限（兼容字段，同 paymentYear） */
+    private Integer paymentPeriod;
 
     /** 保额（万元） */
     @NotNull(message = "保额不能为空")
     private BigDecimal coverage;
+
+    /** 责任配置（JSON格式：键为责任项编码，值为选中的选项） */
+    private String responsibilityConfig;
 }

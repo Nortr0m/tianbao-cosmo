@@ -18,7 +18,11 @@ export function useAuth() {
       const result = await apiLogin(params)
       userStore.setAuth(result)
       ElMessage.success('登录成功')
-      router.push(redirect || '/')
+      if (redirect) {
+        router.push(redirect)
+      } else {
+        router.back()
+      }
       return true
     } catch (error) {
       const msg = error instanceof Error ? error.message : '登录失败'

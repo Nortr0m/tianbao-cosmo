@@ -5,6 +5,7 @@
         <div class="logo" @click="router.push('/')">
           <img src="/logo.jpg" alt="天保星君" class="logo-img" />
           <span class="logo-text">天保星君</span>
+          <span class="logo-slogan">天保定尔 · 星辉引路</span>
         </div>
         <nav class="main-nav">
           <router-link
@@ -176,6 +177,17 @@ function handleCommand(command: string) {
   background-clip: text;
   letter-spacing: 2px;
   font-family: var(--font-family-display);
+}
+
+.logo-slogan {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-left: 4px;
+  letter-spacing: 1px;
+  border-left: 1px solid var(--border-color);
+  padding-left: 12px;
+  margin-left: 12px;
 }
 
 .main-nav {

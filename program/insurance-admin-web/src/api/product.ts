@@ -1,14 +1,15 @@
 import { get, post, put, del, upload } from './request'
 
 export interface ProductQuery {
-  page?: number
-  size?: number
+  pageNum?: number
+  pageSize?: number
   keyword?: string
   companyId?: number
   productType?: number
   status?: number
   saleStatus?: number
   systemStatus?: number
+  maintenanceStatus?: number
   sortField?: string
   sortOrder?: string
 }

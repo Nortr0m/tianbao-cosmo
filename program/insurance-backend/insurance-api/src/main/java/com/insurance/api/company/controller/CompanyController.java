@@ -4,7 +4,9 @@ import com.insurance.api.company.dto.CompanyQueryDTO;
 import com.insurance.api.company.service.CompanyService;
 import com.insurance.api.company.vo.CompanyCosmosVO;
 import com.insurance.api.company.vo.CompanyRatingVO;
+import com.insurance.api.company.vo.CompanyRelationInfoVO;
 import com.insurance.api.company.vo.CompanyVO;
+import com.insurance.api.company.vo.ShareholderInfoVO;
 import com.insurance.common.result.PageResult;
 import com.insurance.common.result.Result;
 import lombok.RequiredArgsConstructor;
@@ -61,5 +63,21 @@ public class CompanyController {
     @GetMapping("/cosmos-data")
     public Result<List<CompanyCosmosVO>> getCosmosData() {
         return Result.success(companyService.getCosmosData());
+    }
+
+    /**
+     * 获取保险公司股东列表（持股比例≥10%，按持股比例降序）
+     */
+    @GetMapping("/{companyId}/shareholders")
+    public Result<List<ShareholderInfoVO>> getCompanyShareholders(@PathVariable Long companyId) {
+        return Result.success(companyService.getCompanyShareholders(companyId));
+    }
+
+    /**
+     * 获取保险公司关联公司列表
+     */
+    @GetMapping("/{companyId}/relations")
+    public Result<List<CompanyRelationInfoVO>> getCompanyRelations(@PathVariable Long companyId) {
+        return Result.success(companyService.getCompanyRelations(companyId));
     }
 }
