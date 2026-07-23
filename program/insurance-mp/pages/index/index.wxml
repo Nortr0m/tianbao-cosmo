@@ -1,0 +1,78 @@
+<view class="index-page">
+  <!-- Banner轮播 -->
+  <swiper
+    class="banner-swiper"
+    indicator-dots
+    autoplay
+    circular
+    interval="4000"
+    duration="500"
+    indicator-color="rgba(255,255,255,0.5)"
+    indicator-active-color="#FFFFFF"
+  >
+    <swiper-item wx:for="{{banners}}" wx:key="id" data-item="{{item}}" bindtap="onBannerTap">
+      <image class="banner-image" src="{{item.image}}" mode="aspectFill" lazy-load />
+      <view class="banner-title">{{item.title}}</view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 险种分类入口 -->
+  <view class="section categories-section">
+    <van-grid column-num="3" border="{{false}}" gutter="16">
+      <van-grid-item
+        wx:for="{{categories}}"
+        wx:key="id"
+        icon="{{item.icon}}"
+        icon-color="{{item.color}}"
+        text="{{item.name}}"
+        bindtap="onCategoryTap"
+        data-item="{{item}}"
+      />
+    </van-grid>
+  </view>
+
+  <!-- 热门产品推荐 -->
+  <view class="section products-section">
+    <view class="section-header">
+      <view class="section-title">
+        <van-icon name="fire-o" color="#E53E3E" size="36rpx" />
+        <text>热门产品</text>
+      </view>
+      <view class="section-more" bindtap="onViewMoreHot">
+        <text>查看更多</text>
+        <van-icon name="arrow" size="24rpx" color="#999" />
+      </view>
+    </view>
+    <view class="product-list">
+      <product-card
+        wx:for="{{hotProducts}}"
+        wx:key="id"
+        product="{{item}}"
+      />
+    </view>
+  </view>
+
+  <!-- 新品推荐 -->
+  <view class="section products-section">
+    <view class="section-header">
+      <view class="section-title">
+        <van-icon name="new-o" color="#38A169" size="36rpx" />
+        <text>新品推荐</text>
+      </view>
+      <view class="section-more" bindtap="onViewMoreNew">
+        <text>查看更多</text>
+        <van-icon name="arrow" size="24rpx" color="#999" />
+      </view>
+    </view>
+    <view class="product-list">
+      <product-card
+        wx:for="{{newProducts}}"
+        wx:key="id"
+        product="{{item}}"
+      />
+    </view>
+  </view>
+
+  <!-- 底部安全区域 -->
+  <view class="safe-area-bottom"></view>
+</view>

@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "产品对比",
+  "backgroundColor": "#F7FAFC",
+  "usingComponents": {
+    "van-skeleton": "@vant/weapp/skeleton/index",
+    "van-empty": "@vant/weapp/empty/index",
+    "van-button": "@vant/weapp/button/index",
+    "van-icon": "@vant/weapp/icon/index",
+    "van-image": "@vant/weapp/image/index"
+  }
+}

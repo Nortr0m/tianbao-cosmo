@@ -1,0 +1,54 @@
+<view wx:if="{{visible}}" class="compare-bar">
+  <!-- 遮罩层 -->
+  <view class="compare-bar__mask" bindtap="onClose"></view>
+
+  <!-- 对比栏主体 -->
+  <view class="compare-bar__content">
+    <!-- 头部信息 -->
+    <view class="compare-bar__header">
+      <text class="compare-bar__title">已选产品 ({{count}}/{{maxCount}})</text>
+      <view class="compare-bar__actions">
+        <text class="compare-bar__clear" bindtap="onClear">清空</text>
+        <van-icon name="cross" size="32rpx" color="#999" bindtap="onClose" />
+      </view>
+    </view>
+
+    <!-- 已选产品列表 -->
+    <scroll-view scroll-x class="compare-bar__list" show-scrollbar="{{false}}">
+      <view class="compare-bar__items">
+        <view wx:for="{{compareList}}" wx:key="id" class="compare-bar__item">
+          <view class="compare-bar__item-content">
+            <van-image
+              wx:if="{{item.logo}}"
+              src="{{item.logo}}"
+              width="72rpx"
+              height="72rpx"
+              round
+              fit="cover"
+            />
+            <view wx:else class="compare-bar__item-placeholder">
+              {{item.companyName ? item.companyName[0] : ''}}
+            </view>
+            <text class="compare-bar__item-name text-ellipsis">{{item.name}}</text>
+          </view>
+          <view class="compare-bar__item-remove" data-index="{{index}}" bindtap="onRemoveItem">
+            <van-icon name="clear" size="32rpx" color="#E53E3E" />
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 底部操作 -->
+    <view class="compare-bar__footer safe-area-bottom">
+      <van-button
+        type="primary"
+        block
+        round
+        disabled="{{!canCompare}}"
+        bindtap="onCompare"
+      >
+        {{canCompare ? '开始对比' : '请至少选择2款产品'}}
+      </van-button>
+    </view>
+  </view>
+</view>

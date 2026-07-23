@@ -1,0 +1,17 @@
+{
+  "navigationBarTitleText": "保险产品",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 100,
+  "backgroundColor": "#F7FAFC",
+  "usingComponents": {
+    "van-search": "@vant/weapp/search/index",
+    "van-tabs": "@vant/weapp/tabs/index",
+    "van-tab": "@vant/weapp/tab/index",
+    "van-icon": "@vant/weapp/icon/index",
+    "van-loading": "@vant/weapp/loading/index",
+    "van-empty": "@vant/weapp/empty/index",
+    "van-divider": "@vant/weapp/divider/index",
+    "product-card": "../../../components/product-card/product-card",
+    "compare-bar": "../../../components/compare-bar/compare-bar"
+  }
+}

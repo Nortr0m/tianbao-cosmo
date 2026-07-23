@@ -1,0 +1,70 @@
+<view class="product-card {{cardType === 'compact' ? 'product-card--compact' : ''}}" bindtap="onTapCard">
+  <!-- 对比选择框 -->
+  <view wx:if="{{showCompare}}" class="product-card__compare" catchtap="onTapCompare">
+    <van-checkbox
+      value="{{isCompared}}"
+      icon-size="18px"
+    />
+  </view>
+
+  <!-- 公司Logo -->
+  <view wx:if="{{showLogo && product.companyLogo}}" class="product-card__logo">
+    <van-image
+      src="{{product.companyLogo}}"
+      width="80rpx"
+      height="80rpx"
+      round
+      fit="cover"
+      use-error-slot
+    >
+      <text slot="error" class="product-card__logo-text">{{product.companyName ? product.companyName[0] : ''}}</text>
+    </van-image>
+  </view>
+
+  <!-- 产品信息 -->
+  <view class="product-card__info">
+    <!-- 标题行 -->
+    <view class="product-card__header">
+      <text class="product-card__name text-ellipsis">{{product.name}}</text>
+      <view class="product-card__badges">
+        <van-tag wx:if="{{product.isHot}}" color="#E53E3E" size="small">热</van-tag>
+        <van-tag wx:if="{{product.isNew}}" color="#38A169" size="small">新</van-tag>
+      </view>
+    </view>
+
+    <!-- 公司名 -->
+    <text class="product-card__company text-ellipsis">{{product.companyName}}</text>
+
+    <!-- 标签 -->
+    <view class="product-card__tags" wx:if="{{product.tags && product.tags.length > 0}}">
+      <van-tag
+        wx:for="{{product.tags}}"
+        wx:key="index"
+        type="primary"
+        size="small"
+        plain
+        custom-class="product-card__tag"
+        data-tag="{{item}}"
+        catchtap="onTapTag"
+      >
+        {{item}}
+      </van-tag>
+    </view>
+
+    <!-- 简介 -->
+    <text wx:if="{{product.summary}}" class="product-card__summary text-ellipsis-2">{{product.summary}}</text>
+
+    <!-- 价格和保额 -->
+    <view class="product-card__footer">
+      <view class="product-card__price">
+        <text class="product-card__price-unit">¥</text>
+        <text class="product-card__price-value">{{formattedPrice}}</text>
+        <text class="product-card__price-label">/{{product.priceUnit || '年'}}</text>
+      </view>
+      <view class="product-card__coverage">
+        <text class="product-card__coverage-label">保额 </text>
+        <text class="product-card__coverage-value">{{formattedCoverage}}</text>
+      </view>
+    </view>
+  </view>
+</view>

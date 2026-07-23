@@ -1,0 +1,160 @@
+.product-card {
+  display: flex;
+  align-items: flex-start;
+  padding: 24rpx;
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  position: relative;
+}
+
+.product-card:active {
+  opacity: 0.9;
+}
+
+/* 对比选择框 */
+.product-card__compare {
+  margin-right: 16rpx;
+  display: flex;
+  align-items: center;
+  padding-top: 8rpx;
+}
+
+/* 公司Logo */
+.product-card__logo {
+  flex-shrink: 0;
+  margin-right: 20rpx;
+}
+
+.product-card__logo-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+/* 产品信息 */
+.product-card__info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* 标题行 */
+.product-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.product-card__name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  margin-right: 12rpx;
+}
+
+.product-card__badges {
+  display: flex;
+  gap: 8rpx;
+  flex-shrink: 0;
+}
+
+/* 公司名 */
+.product-card__company {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+  margin-bottom: 12rpx;
+}
+
+/* 标签 */
+.product-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.product-card__tag {
+  margin-right: 0 !important;
+}
+
+/* 简介 */
+.product-card__summary {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 16rpx;
+}
+
+/* 底部价格和保额 */
+.product-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.product-card__price {
+  display: flex;
+  align-items: baseline;
+}
+
+.product-card__price-unit {
+  font-size: 24rpx;
+  color: var(--danger-color);
+  font-weight: 500;
+}
+
+.product-card__price-value {
+  font-size: 36rpx;
+  color: var(--danger-color);
+  font-weight: bold;
+  margin: 0 4rpx;
+}
+
+.product-card__price-label {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+.product-card__coverage {
+  display: flex;
+  align-items: baseline;
+}
+
+.product-card__coverage-label {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+.product-card__coverage-value {
+  font-size: 26rpx;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* 紧凑模式 */
+.product-card--compact {
+  padding: 16rpx;
+}
+
+.product-card--compact .product-card__logo {
+  margin-right: 16rpx;
+}
+
+.product-card--compact .product-card__summary {
+  display: none;
+}
+
+.product-card--compact .product-card__tags {
+  margin-bottom: 8rpx;
+}

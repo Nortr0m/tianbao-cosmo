@@ -1,0 +1,59 @@
+# ============================================================
+# 天保星君 - Git Ignore
+# 策略：仅推送 program/ 目录下的源代码，排除所有产品资料
+# ============================================================
+
+# === TRAE & IDE ===
+.trae/
+.uploads/
+.trae-html-share-packages/
+.vscode/
+.idea/
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === 排除根目录下所有文件和目录（产品资料、报告、文档等）===
+/*
+
+# === 仅保留代码目录和必要配置 ===
+!/program/
+!/.gitignore
+!/README.md
+
+# === program/ 目录内的排除项 ===
+# 构建产物
+program/**/node_modules/
+program/**/target/
+program/**/dist/
+program/**/build/
+program/**/.gradle/
+program/**/*.class
+
+# 环境配置
+program/**/.env
+program/**/.env.local
+program/**/.env.*.local
+
+# IDE 缓存
+program/**/.vscode/
+program/**/.idea/
+program/**/*.iml
+
+# 日志
+program/**/*.log
+program/**/*.err
+
+# 编译产物
+program/**/*.exe
+program/**/*.dll
+
+# 产品资料（program 目录内）
+program/卡片背景资料/
+
+# === 通用排除 ===
+*.zip
+*.tar.gz
+*.rar
+*.7z

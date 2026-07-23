@@ -1,0 +1,75 @@
+<view class="compare-page">
+  <!-- 加载中 -->
+  <van-skeleton wx:if="{{loading}}" title row="8" />
+
+  <!-- 空状态 -->
+  <van-empty wx:if="{{!loading && empty}}" description="请选择至少2款产品进行对比">
+    <van-button type="primary" size="small" round bindtap="onAddMore">去添加产品</van-button>
+  </van-empty>
+
+  <!-- 对比内容 -->
+  <block wx:if="{{!loading && !empty}}">
+    <!-- 产品头部 -->
+    <scroll-view scroll-x class="compare-header" show-scrollbar="{{false}}">
+      <view class="compare-header__row">
+        <!-- 空白占位 -->
+        <view class="compare-header__label">对比项</view>
+        <!-- 产品列 -->
+        <view wx:for="{{products}}" wx:key="id" class="compare-header__product">
+          <view class="compare-header__product-card" data-id="{{item.id}}" bindtap="onViewDetail">
+            <view class="compare-header__logo">
+              <van-image
+                wx:if="{{item.companyLogo}}"
+                src="{{item.companyLogo}}"
+                width="80rpx"
+                height="80rpx"
+                round
+                fit="cover"
+              />
+              <view wx:else class="compare-header__logo-placeholder">{{item.companyName[0]}}</view>
+            </view>
+            <text class="compare-header__product-name text-ellipsis">{{item.name}}</text>
+            <text class="compare-header__company-name text-ellipsis">{{item.companyName}}</text>
+            <view class="compare-header__remove" data-index="{{index}}" catchtap="onRemoveProduct">
+              <van-icon name="cross" size="24rpx" color="#E53E3E" />
+            </view>
+          </view>
+        </view>
+        <!-- 添加更多 -->
+        <view wx:if="{{products.length < 3}}" class="compare-header__product compare-header__add" bindtap="onAddMore">
+          <view class="compare-header__add-btn">
+            <van-icon name="plus" size="40rpx" color="#999" />
+            <text>添加</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 对比表格 -->
+    <view class="compare-body">
+      <view wx:for="{{comparison}}" wx:key="key" class="compare-row">
+        <view class="compare-row__label">{{item.label}}</view>
+        <scroll-view scroll-x class="compare-row__values" show-scrollbar="{{false}}">
+          <view class="compare-row__values-inner">
+            <view
+              wx:for="{{item.values}}"
+              wx:for-item="value"
+              wx:for-index="valueIndex"
+              wx:key="valueIndex"
+              class="compare-row__value {{item.highlight === valueIndex ? 'compare-row__value--highlight' : ''}}"
+            >
+              {{value}}
+            </view>
+            <!-- 占位 -->
+            <view wx:if="{{products.length < 3}}" class="compare-row__value compare-row__value--empty">-</view>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+
+    <!-- 底部提示 -->
+    <view class="compare-footer">
+      <text class="compare-footer__tip">绿色标注为优势项</text>
+    </view>
+  </block>
+</view>

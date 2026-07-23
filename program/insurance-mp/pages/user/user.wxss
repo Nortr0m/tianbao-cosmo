@@ -1,0 +1,130 @@
+.user-page {
+  min-height: 100vh;
+  background-color: var(--bg-secondary);
+  padding-bottom: 32rpx;
+}
+
+/* 用户卡片 */
+.user-card {
+  position: relative;
+  margin: 24rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+}
+
+.user-card__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200rpx;
+  background: linear-gradient(135deg, #2B6CB0 0%, #4299E1 100%);
+}
+
+.user-card__content {
+  position: relative;
+  padding: 32rpx;
+  padding-top: 120rpx;
+  background-color: #FFFFFF;
+  border-radius: 0 0 24rpx 24rpx;
+}
+
+/* 用户信息 */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin-bottom: 32rpx;
+}
+
+.user-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4rpx solid #FFFFFF;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.user-avatar__image {
+  width: 100%;
+  height: 100%;
+}
+
+.user-avatar__placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.user-tip {
+  display: block;
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+}
+
+.user-level {
+  display: flex;
+  align-items: center;
+}
+
+/* 统计信息 */
+.user-stats {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 24rpx;
+  border-top: 1rpx solid var(--border-light);
+}
+
+.user-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 24rpx;
+}
+
+.user-stat__value {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-height: 48rpx;
+  display: flex;
+  align-items: center;
+}
+
+.user-stat__label {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+}
+
+/* 功能菜单 */
+.menu-section {
+  margin: 0 24rpx 24rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+
+/* 操作按钮区 */
+.action-section {
+  margin: 0 24rpx;
+  padding: 24rpx 0;
+}

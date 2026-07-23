@@ -1,0 +1,13 @@
+{
+  "navigationBarTitleText": "生成卡片",
+  "backgroundColor": "#F7FAFC",
+  "onReachBottomDistance": 100,
+  "usingComponents": {
+    "van-search": "@vant/weapp/search/index",
+    "van-icon": "@vant/weapp/icon/index",
+    "van-tag": "@vant/weapp/tag/index",
+    "van-loading": "@vant/weapp/loading/index",
+    "van-switch": "@vant/weapp/switch/index",
+    "van-button": "@vant/weapp/button/index"
+  }
+}

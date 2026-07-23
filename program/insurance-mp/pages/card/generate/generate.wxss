@@ -1,0 +1,215 @@
+.generate-page {
+  min-height: 100vh;
+  background-color: var(--bg-secondary);
+  padding-bottom: 160rpx;
+}
+
+/* 预览区 */
+.preview-section {
+  background-color: #FFFFFF;
+  padding: 24rpx;
+}
+
+.preview-area {
+  width: 100%;
+  height: 400rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  position: relative;
+  background-color: var(--bg-tertiary);
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+}
+
+.preview-watermark {
+  position: absolute;
+  bottom: 20rpx;
+  right: 20rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.3);
+}
+
+.preview-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+}
+
+.preview-placeholder text {
+  font-size: 28rpx;
+  color: var(--text-tertiary);
+}
+
+/* 分类选择 */
+.category-scroll {
+  background-color: #FFFFFF;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--border-light);
+}
+
+.category-list {
+  display: flex;
+  gap: 12rpx;
+  padding: 0 24rpx;
+  min-width: max-content;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 24rpx;
+  border-radius: 32rpx;
+  background-color: var(--bg-secondary);
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.category-item--active {
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+}
+
+/* 搜索区 */
+.search-section {
+  background-color: #FFFFFF;
+  padding: 0 24rpx 16rpx;
+}
+
+.search-section .van-search {
+  padding: 0 !important;
+}
+
+/* 模板网格 */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
+  padding: 24rpx;
+}
+
+.template-item {
+  position: relative;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background-color: #FFFFFF;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.template-item--active {
+  box-shadow: 0 0 0 4rpx var(--primary-color);
+}
+
+.template-item__image {
+  width: 100%;
+  height: 200rpx;
+  display: block;
+}
+
+.template-item__info {
+  padding: 12rpx;
+}
+
+.template-item__name {
+  display: block;
+  font-size: 24rpx;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.template-item__tags {
+  display: flex;
+  gap: 6rpx;
+}
+
+.template-item__selected {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 加载更多 */
+.loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32rpx;
+  gap: 12rpx;
+}
+
+.loading-text {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+}
+
+/* 配置区 */
+.config-section {
+  background-color: #FFFFFF;
+  padding: 32rpx;
+  margin-top: 16rpx;
+}
+
+.config-section .section-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 24rpx;
+}
+
+.config-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--border-light);
+}
+
+.config-item:last-child {
+  border-bottom: none;
+}
+
+.config-item__label {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+
+.config-item__input {
+  flex: 1;
+  text-align: right;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  margin-left: 24rpx;
+}
+
+/* 底部生成按钮 */
+.generate-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #FFFFFF;
+  border-top: 1rpx solid var(--border-light);
+  padding: 16rpx 32rpx;
+  z-index: 100;
+}

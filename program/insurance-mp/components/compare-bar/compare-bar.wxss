@@ -1,0 +1,124 @@
+.compare-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+/* 遮罩层 */
+.compare-bar__mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+/* 内容区域 */
+.compare-bar__content {
+  position: relative;
+  z-index: 1001;
+  background-color: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 24rpx 24rpx 0;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* 头部 */
+.compare-bar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.compare-bar__title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.compare-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.compare-bar__clear {
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+}
+
+/* 产品列表 */
+.compare-bar__list {
+  white-space: nowrap;
+  margin-bottom: 24rpx;
+}
+
+.compare-bar__items {
+  display: inline-flex;
+  gap: 20rpx;
+}
+
+.compare-bar__item {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--bg-secondary);
+  border-radius: 16rpx;
+  padding: 16rpx;
+  min-width: 200rpx;
+  max-width: 280rpx;
+  position: relative;
+}
+
+.compare-bar__item-content {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.compare-bar__item-placeholder {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.compare-bar__item-name {
+  font-size: 24rpx;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.compare-bar__item-remove {
+  margin-left: 8rpx;
+  padding: 4rpx;
+  flex-shrink: 0;
+}
+
+/* 底部按钮 */
+.compare-bar__footer {
+  padding: 16rpx 0 32rpx;
+}

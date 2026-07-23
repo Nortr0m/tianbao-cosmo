@@ -1,0 +1,179 @@
+.compare-page {
+  min-height: 100vh;
+  background-color: var(--bg-secondary);
+}
+
+/* 头部产品区 */
+.compare-header {
+  background-color: #FFFFFF;
+  border-bottom: 1rpx solid var(--border-light);
+}
+
+.compare-header__row {
+  display: flex;
+  align-items: stretch;
+  padding: 24rpx;
+  min-width: max-content;
+}
+
+.compare-header__label {
+  width: 160rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.compare-header__product {
+  width: 240rpx;
+  flex-shrink: 0;
+  padding: 0 12rpx;
+}
+
+.compare-header__product-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx;
+  background-color: var(--bg-secondary);
+  border-radius: 16rpx;
+  position: relative;
+}
+
+.compare-header__logo {
+  margin-bottom: 12rpx;
+}
+
+.compare-header__logo-placeholder {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.compare-header__product-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  width: 100%;
+}
+
+.compare-header__company-name {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  text-align: center;
+  width: 100%;
+  margin-top: 4rpx;
+}
+
+.compare-header__remove {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  padding: 8rpx;
+}
+
+/* 添加更多 */
+.compare-header__add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.compare-header__add-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 160rpx;
+  background-color: var(--bg-secondary);
+  border-radius: 16rpx;
+  border: 2rpx dashed var(--border-color);
+}
+
+.compare-header__add-btn text {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  margin-top: 8rpx;
+}
+
+/* 对比表格 */
+.compare-body {
+  background-color: #FFFFFF;
+}
+
+.compare-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1rpx solid var(--border-light);
+  min-height: 88rpx;
+}
+
+.compare-row:last-child {
+  border-bottom: none;
+}
+
+.compare-row__label {
+  width: 160rpx;
+  flex-shrink: 0;
+  padding: 20rpx 24rpx;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  font-weight: 500;
+  background-color: var(--bg-secondary);
+}
+
+.compare-row__values {
+  flex: 1;
+}
+
+.compare-row__values-inner {
+  display: flex;
+  min-width: max-content;
+}
+
+.compare-row__value {
+  width: 240rpx;
+  flex-shrink: 0;
+  padding: 20rpx 12rpx;
+  font-size: 26rpx;
+  color: var(--text-primary);
+  text-align: center;
+  border-right: 1rpx solid var(--border-light);
+}
+
+.compare-row__value:last-child {
+  border-right: none;
+}
+
+.compare-row__value--highlight {
+  color: var(--secondary-color);
+  font-weight: 600;
+  background-color: rgba(56, 161, 105, 0.08);
+}
+
+.compare-row__value--empty {
+  color: var(--text-tertiary);
+}
+
+/* 底部提示 */
+.compare-footer {
+  padding: 24rpx;
+  text-align: center;
+}
+
+.compare-footer__tip {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}

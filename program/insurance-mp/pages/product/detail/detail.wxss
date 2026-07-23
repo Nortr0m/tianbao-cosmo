@@ -1,0 +1,373 @@
+.product-detail-page {
+  min-height: 100vh;
+  background-color: var(--bg-secondary);
+  padding-bottom: 160rpx;
+}
+
+/* 头部信息 */
+.detail-header {
+  background-color: #FFFFFF;
+  padding: 32rpx;
+  margin-bottom: 16rpx;
+}
+
+.detail-header__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.detail-header__company {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.detail-header__company-placeholder {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.detail-header__company-name {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+.detail-header__badges {
+  display: flex;
+  gap: 8rpx;
+}
+
+.detail-header__name {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12rpx;
+}
+
+.detail-header__summary {
+  display: block;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  margin-bottom: 16rpx;
+  line-height: 1.5;
+}
+
+.detail-header__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-bottom: 24rpx;
+}
+
+.detail-header__price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16rpx;
+  border-top: 1rpx solid var(--border-light);
+}
+
+.detail-header__price {
+  display: flex;
+  align-items: baseline;
+}
+
+.detail-header__price-unit {
+  font-size: 28rpx;
+  color: var(--danger-color);
+  font-weight: 500;
+}
+
+.detail-header__price-value {
+  font-size: 48rpx;
+  color: var(--danger-color);
+  font-weight: bold;
+  margin: 0 4rpx;
+}
+
+.detail-header__price-label {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+}
+
+.detail-header__coverage {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+/* 区块样式 */
+.detail-section {
+  background-color: #FFFFFF;
+  padding: 32rpx;
+  margin-bottom: 16rpx;
+}
+
+.section-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20rpx;
+}
+
+/* 产品特点 */
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Tab内容 */
+.tab-content {
+  padding: 24rpx;
+  background-color: var(--bg-secondary);
+  min-height: 400rpx;
+}
+
+/* 保险责任 */
+.responsibility-item {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.responsibility-item__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.responsibility-item__title {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex: 1;
+}
+
+.responsibility-item__name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.responsibility-item__amount {
+  font-size: 28rpx;
+  color: var(--danger-color);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.responsibility-item__desc {
+  display: block;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* 投保条件 */
+.condition-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.condition-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+/* 免责条款 */
+.exclusion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.exclusion-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.exclusion-item__num {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+/* 利益演示表格 */
+.benefit-table {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+}
+
+.benefit-table__header {
+  display: flex;
+  background-color: var(--primary-color);
+  padding: 20rpx 0;
+}
+
+.benefit-table__header .benefit-table__cell {
+  color: #FFFFFF;
+  font-weight: 500;
+  font-size: 24rpx;
+}
+
+.benefit-table__row {
+  display: flex;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--border-light);
+}
+
+.benefit-table__row:last-child {
+  border-bottom: none;
+}
+
+.benefit-table__cell {
+  flex: 1;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--text-primary);
+  padding: 0 4rpx;
+}
+
+.benefit-notice {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 16rpx;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+/* 公司卡片 */
+.company-card {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 32rpx;
+}
+
+.company-card__header {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.company-card__logo-placeholder {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.company-card__info {
+  flex: 1;
+}
+
+.company-card__name {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.company-card__rating {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+.company-card__stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 24rpx 0;
+}
+
+.company-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.company-stat__value {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.company-stat__label {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+}
+
+.company-intro__text {
+  display: block;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* 底部操作栏 */
+.detail-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #FFFFFF;
+  border-top: 1rpx solid var(--border-light);
+  padding: 16rpx 32rpx;
+  z-index: 100;
+}
+
+.detail-footer__actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.detail-footer__btn {
+  flex: 1;
+}
+
+.detail-footer__btn--primary {
+  flex: 1.5;
+}
